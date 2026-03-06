@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# SQLite database — stored in Actions cache, not in git
+varberg_weather.db
+
+# Local logs
+collect.log
+
+# OS
+.DS_Store
+Thumbs.db
