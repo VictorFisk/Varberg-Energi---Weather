@@ -1,0 +1,58 @@
+name: Collect SMHI Weather Data
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Collection mode"
+        required: false
+        default: "collect"
+        type: choice
+        options:
+          - collect
+          - export-only
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run collector
+        run: |
+          MODE="${{ github.event.inputs.mode || 'collect' }}"
+          if [ "$MODE" = "collect" ]; then
+            python collect_smhi.py
+          else
+            python collect_smhi.py --export
+          fi
+
+      - name: Show summary
+        run: python query_db.py check
+
+      # Commit BOTH the DB and weather_data.json.
+      # DB is stored in the repo so every run builds on full history.
+      - name: Commit database and weather data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add weather_data.json daily_archive.json varberg_weather.db
+          git diff --cached --quiet || \
+            git commit -m "chore: update weather data $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
