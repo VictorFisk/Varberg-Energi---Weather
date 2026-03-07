@@ -1,0 +1,61 @@
+name: Backfill Historical Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: "Fetch only this year (e.g. 2024). Leave empty for all available."
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run — show what would be fetched without writing to DB"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run backfill
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.year }}" ]; then
+            ARGS="--year ${{ github.event.inputs.year }}"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          echo "Running: python backfill_smhi.py $ARGS"
+          python backfill_smhi.py $ARGS
+
+      - name: Show database summary
+        run: python query_db.py check
+
+      # Commit DB + weather_data.json so history is preserved for all future runs
+      - name: Commit database and weather data
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add varberg_weather.db weather_data.json daily_archive.json
+          git diff --cached --quiet || \
+            git commit -m "chore: backfill historical weather data $(date -u '+%Y-%m-%d')"
+          git push
