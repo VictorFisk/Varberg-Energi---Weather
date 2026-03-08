@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Väderleksrapport – Varberg Energi Fjärrvärme</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:      #007A6E;
+    --teal-dark: #005F56;
+    --teal-light:#E6F4F2;
+    --text:      #1A2025;
+    --muted:     #5C6870;
+    --border:    #D8E4E2;
+    --bg:        #F6FAF9;
+    --white:     #FFFFFF;
+    --frost:     #0057A8;
+    --frost-bg:  #E8F1FA;
+    --warn:      #C94A2B;
+    --warn-bg:   #FDF0ED;
+    --solar:     #D97B10;
+    --solar-bg:  #FEF3E2;
+    --solar-light:#FDF6EC;
+    --font:      'Source Sans 3', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--teal-dark);
+    color: white;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+  .topbar-logo {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 15px; font-weight: 700;
+  }
+  .logo-circle {
+    width: 30px; height: 30px; background: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .logo-circle span { font-size: 12px; font-weight: 700; color: var(--teal-dark); }
+  .topbar-week { font-size: 12px; opacity: 0.8; white-space: nowrap; }
+
+  /* ── HERO ── */
+  .hero { background: var(--teal); color: white; padding: 20px 16px 18px; }
+  .hero-sub { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 4px; }
+  .hero h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+  .hero-meta { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+
+  /* ── FROST ALERT ── */
+  .alert-bar {
+    padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .alert-bar--severe  { background: #FDE8E8; border-bottom: 2px solid #C53030; }
+  .alert-bar--frost   { background: var(--frost-bg); border-bottom: 1px solid #C5D9EE; }
+  .alert-bar--mild    { background: #EAF4F0; border-bottom: 1px solid #A8D5C2; }
+  .alert-bar--normal  { background: #F0F7F4; border-bottom: 1px solid #C5DDD4; }
+  .alert-bar-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .alert-bar-inner { max-width: 1100px; margin: 0 auto; width: 100%; display: flex; gap: 10px; align-items: flex-start; }
+  .alert-bar-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+  .alert-bar--severe  .alert-bar-label { color: #C53030; }
+  .alert-bar--frost   .alert-bar-label { color: var(--frost); }
+  .alert-bar--mild    .alert-bar-label { color: #1A6644; }
+  .alert-bar--normal  .alert-bar-label { color: var(--teal-dark); }
+  .alert-bar--storm   { background: #FFF3E0; border-bottom: 2px solid #D97B10; }
+  .alert-bar--storm   .alert-bar-label { color: #B85C00; }
+  .alert-bar--wind    { background: #FFF8EC; border-bottom: 1px solid #E8B96A; }
+  .alert-bar--wind    .alert-bar-label { color: #9A5A00; }
+  .alert-bar--rain    { background: #EEF4FB; border-bottom: 1px solid #7AABE0; }
+  .alert-bar--rain    .alert-bar-label { color: #1A5080; }
+  .alert-bar--sleet   { background: #EDF2F8; border-bottom: 2px solid #4A7DB5; }
+  .alert-bar--sleet   .alert-bar-label { color: #1A3D6B; }
+  .alert-bar p { font-size: 13px; color: #1A2A3A; margin: 0; }
+
+  /* ── MAIN ── */
+  .main { padding: 20px 16px 48px; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 12px; margin-top: 28px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── INFO TOOLTIP ── */
+  .info-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--teal-light); color: var(--teal-dark);
+    font-size: 11px; font-weight: 700; cursor: pointer;
+    border: none; flex-shrink: 0; vertical-align: middle;
+    margin-left: 5px; line-height: 1;
+    transition: background 0.15s;
+    font-family: var(--font);
+  }
+  .info-btn:hover, .info-btn.active { background: var(--teal); color: white; }
+
+  .info-box {
+    display: none;
+    background: #FFFDF5;
+    border: 1px solid #E0D8C0;
+    border-left: 3px solid var(--teal);
+    border-radius: 0 6px 6px 6px;
+    padding: 10px 13px;
+    font-size: 13px;
+    color: #3A3A3A;
+    line-height: 1.6;
+    margin-top: 6px;
+    margin-bottom: 4px;
+  }
+  .info-box.open { display: block; }
+  .info-box strong { color: var(--teal-dark); }
+
+  /* ── DATA GLOSSARY SECTION ── */
+  .glossary {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .glossary-item {
+    border-bottom: 1px solid var(--border);
+  }
+  .glossary-item:last-child { border-bottom: none; }
+
+  .glossary-toggle {
+    width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+    padding: 13px 16px; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--text);
+    transition: background 0.12s;
+  }
+  .glossary-toggle:hover { background: var(--teal-light); }
+  .glossary-toggle.open { background: var(--teal-light); color: var(--teal-dark); }
+
+  .glossary-toggle-left { display: flex; align-items: center; gap: 10px; }
+  .glossary-icon { font-size: 18px; width: 24px; text-align: center; }
+  .glossary-chevron { font-size: 12px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .glossary-toggle.open .glossary-chevron { transform: rotate(180deg); }
+
+  .glossary-body {
+    display: none;
+    padding: 0 16px 14px 50px;
+    font-size: 13px;
+    color: #3A3A3A;
+    line-height: 1.7;
+    background: #FDFCF8;
+    border-top: 1px solid #EEE8D8;
+  }
+  .glossary-body.open { display: block; }
+  .glossary-body p { margin-bottom: 6px; }
+  .glossary-body p:last-child { margin-bottom: 0; }
+  .glossary-body .example {
+    background: var(--teal-light); border-radius: 5px;
+    padding: 6px 10px; font-size: 12px; color: var(--teal-dark);
+    margin-top: 6px; font-style: italic;
+  }
+
+  /* ── SUMMARY CARDS ── */
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cards .card-solar-wide { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-radius: 10px; overflow: hidden; padding: 0; }
+  .cards .card-solar-wide::before { display: none; }
+
+  .card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 14px 12px;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; border-radius: 10px 10px 0 0;
+  }
+  .card.c-teal::before   { background: var(--teal); }
+  .card.c-blue::before   { background: var(--frost); }
+  .card.c-orange::before { background: var(--warn); }
+  .card.c-green::before  { background: #3A9E6E; }
+  .card.c-solar::before  { background: var(--solar); }
+
+  .card-header { display: flex; align-items: center; margin-bottom: 6px; }
+  .card-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+
+  .card-value { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .card-value sup { font-size: 13px; font-weight: 400; color: var(--muted); vertical-align: super; }
+  .card-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  .delta {
+    display: inline-flex; align-items: center; font-size: 11px; font-weight: 600;
+    margin-top: 7px; padding: 2px 8px; border-radius: 12px;
+  }
+  .delta.teal    { background: var(--teal-light); color: var(--teal-dark); }
+  .delta.blue    { background: var(--frost-bg); color: var(--frost); }
+  .delta.orange  { background: var(--warn-bg); color: var(--warn); }
+  .delta.neutral { background: #F0F0F0; color: #888; }
+
+  /* ── FORECAST CARDS ── */
+  .forecast-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .fc-day { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .fc-day.today { border-color: var(--teal); }
+
+  .fc-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; background: var(--white); gap: 8px;
+  }
+  .fc-day.today .fc-top { background: var(--teal-light); }
+
+  .fc-dayname { font-weight: 700; font-size: 15px; min-width: 36px; color: var(--text); }
+  .fc-day.today .fc-dayname { color: var(--teal-dark); }
+  .fc-date { font-size: 13px; color: var(--muted); flex: 1; }
+
+  .fc-temps { display: flex; gap: 6px; align-items: center; }
+  .fc-hi    { font-size: 18px; font-weight: 700; color: var(--warn);  min-width: 52px; text-align: right; }
+  .fc-lo    { font-size: 18px; font-weight: 700; color: var(--frost); min-width: 52px; text-align: right; }
+  .fc-frost { font-size: 18px; font-weight: 700; color: #C53030;      min-width: 52px; text-align: right; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .b-frost { background: var(--frost-bg); color: var(--frost); }
+  .b-snow  { background: #EEF0F8; color: #4A5568; }
+  .b-cloud { background: #F2F2F2; color: #666; }
+  .b-sun   { background: #FFFBE6; color: #7A5C00; }
+
+  .fc-bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--border); }
+  .fc-stat { padding: 8px 12px; border-right: 1px solid var(--border); font-size: 12px; }
+  .fc-stat:last-child { border-right: none; }
+  .fc-stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+  .fc-stat-val { font-weight: 600; color: var(--text); }
+
+  .hbar { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  .htrack { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .hfill  { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--teal) 0%, var(--frost) 100%); }
+  .hpct   { font-size: 10px; color: var(--muted); }
+
+  /* ── WIND ── */
+  .wind-box { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; align-items: center; gap: 18px; }
+  .compass { width: 64px; height: 64px; border: 2px solid var(--border); border-radius: 50%; position: relative; flex-shrink: 0; background: var(--bg); }
+  .cn,.cs,.ce,.cw { position: absolute; font-size: 8px; font-weight: 700; color: var(--muted); }
+  .cn { top: 3px; left: 50%; transform: translateX(-50%); }
+  .cs { bottom: 3px; left: 50%; transform: translateX(-50%); }
+  .ce { right: 3px; top: 50%; transform: translateY(-50%); }
+  .cw { left: 3px; top: 50%; transform: translateY(-50%); }
+  .carrow { position: absolute; top: 50%; left: 50%; width: 3px; height: 26px; background: var(--teal); border-radius: 2px 2px 0 0; transform-origin: bottom center; transform: translate(-50%, -100%) rotate(225deg); }
+  .cdot { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: var(--text); border-radius: 50%; transform: translate(-50%, -50%); }
+  .wind-rows { flex: 1; }
+  .wrow { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; gap: 8px; }
+  .wrow:last-child { border-bottom: none; }
+  .wrow .l { color: var(--muted); font-size: 12px; }
+  .wrow .v { font-weight: 600; font-size: 13px; text-align: right; }
+
+  /* ── COMPARE ── */
+  .cmp-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .cmp-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .crow { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #F5F5F5; font-size: 13px; }
+  .crow:last-child { border-bottom: none; }
+  .crow .l { color: var(--muted); }
+  .crow .v { font-weight: 700; font-size: 15px; }
+  .neg { color: var(--frost); }
+  .pos { color: var(--warn); }
+  .neu { color: var(--muted); }
+
+  /* ── HIST TABLE ── */
+  .scroll-hint { font-size: 11px; color: var(--muted); text-align: right; margin-bottom: 5px; }
+  .hist-scroll { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .hist-scroll table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
+  .hist-scroll thead tr { background: var(--teal-light); }
+  .hist-scroll thead th { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--teal-dark); text-align: left; padding: 10px 12px; }
+  .hist-scroll tbody tr { border-bottom: 1px solid var(--border); }
+  .hist-scroll tbody tr:last-child { border-bottom: none; }
+  .hist-scroll tbody tr.today { background: #EFF9F7; }
+  .hist-scroll tbody td { padding: 9px 12px; }
+  .hi { font-weight: 700; color: var(--warn); }
+  .lo { font-weight: 700; color: var(--frost); }
+
+  /* ── COLUMN LEGEND ── */
+  .col-legend {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .col-leg-item { flex: 1 1 calc(33% - 8px); min-width: 100px; }
+  .col-leg-btn {
+    width: 100%; text-align: left; background: var(--white);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-size: 12px; font-weight: 600;
+    color: var(--teal-dark); cursor: pointer; font-family: var(--font);
+    transition: background 0.12s;
+  }
+  .col-leg-btn:hover { background: var(--teal-light); }
+
+  /* ── HISTORY CARDS ── */
+  .hist-cards { display: flex; flex-direction: column; gap: 10px; }
+
+  .hist-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+  }
+  .hist-card.today-card { border-color: var(--teal); }
+
+  .hist-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hist-card.today-card .hist-card-header { background: var(--teal-light); }
+
+  .hist-week-badge {
+    font-size: 15px; font-weight: 700; color: var(--text);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .hist-card.today-card .hist-week-badge { color: var(--teal-dark); }
+
+  .prog-tag {
+    font-size: 10px; font-weight: 600; background: var(--teal);
+    color: white; padding: 1px 6px; border-radius: 8px;
+  }
+
+  .hist-period { font-size: 12px; color: var(--muted); flex: 1; }
+
+  .hist-idx-big {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    display: flex; align-items: baseline; gap: 3px;
+  }
+  .hist-idx-big span { font-size: 10px; color: var(--muted); font-weight: 400; }
+
+  .hist-card-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    border-top: 0;
+  }
+
+  .hcg-cell {
+    padding: 9px 12px; border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .hcg-cell:nth-child(3n) { border-right: none; }
+  .hcg-cell:nth-last-child(-n+3) { border-bottom: none; }
+
+  .hcg-label {
+    font-size: 10px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.06em; margin-bottom: 3px;
+  }
+  .hcg-val { font-weight: 600; }
+  .hcg-val.hi { color: var(--warn); }
+  .hcg-val.lo { color: var(--frost); }
+
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(3px);
+    align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--white); border-radius: 18px 18px 0 0;
+    width: 100%; max-width: 520px; max-height: 90vh;
+    overflow-y: auto; padding: 0 0 32px;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .modal-handle {
+    width: 40px; height: 4px; background: #DDD; border-radius: 2px;
+    margin: 12px auto 0;
+  }
+
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px 12px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--white); z-index: 1;
+  }
+
+  .modal-title { font-size: 17px; font-weight: 700; color: var(--text); }
+  .modal-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .modal-close {
+    width: 30px; height: 30px; border-radius: 50%; background: #F0F0F0;
+    border: none; font-size: 16px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .modal-body { padding: 16px 18px 0; }
+
+  /* index breakdown inside modal */
+  .idx-breakdown {
+    background: var(--teal-light); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 16px;
+  }
+  .idx-breakdown-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--teal-dark); margin-bottom: 10px;
+  }
+  .idx-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0; border-bottom: 1px solid rgba(0,122,110,0.15);
+    font-size: 13px;
+  }
+  .idx-row:last-child { border-bottom: none; }
+  .idx-row .il { color: var(--muted); }
+  .idx-row .iv { font-weight: 700; }
+  .idx-total {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--teal);
+    font-size: 15px; font-weight: 700;
+  }
+  .idx-total-num { font-size: 28px; color: var(--teal-dark); letter-spacing: -0.02em; }
+
+  /* day rows in modal */
+  .modal-day {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 8px; overflow: hidden;
+  }
+  .modal-day-top {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: var(--white);
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-day-name { font-weight: 700; font-size: 14px; min-width: 34px; }
+  .modal-day-date { font-size: 12px; color: var(--muted); flex: 1; }
+  .modal-day-temps { display: flex; gap: 8px; font-size: 15px; font-weight: 700; }
+
+  .modal-day-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+  }
+  .mdg-cell {
+    padding: 8px 12px; border-right: 1px solid var(--border);
+    font-size: 12px; border-bottom: 1px solid var(--border);
+  }
+  .mdg-cell:nth-child(3n) { border-right: none; }
+  .mdg-cell:last-child, .mdg-cell:nth-last-child(-n+3) { border-bottom: none; }
+  .mdg-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .mdg-val { font-weight: 600; }
+
+  /* make hist cards look tappable */
+  .hist-card { cursor: pointer; transition: box-shadow 0.15s; }
+  .hist-card:hover { box-shadow: 0 4px 16px rgba(0,122,110,0.15); }
+  .hist-card-header { user-select: none; }
+  .tap-hint {
+    font-size: 11px; color: var(--teal); font-weight: 600;
+    display: flex; align-items: center; gap: 4px; margin-top: 2px;
+  }
+
+  /* ── DAY HOURLY MODAL ── */
+  #dayModal .modal { border-radius: 18px 18px 0 0; display: flex; flex-direction: column; max-height: 90vh; }
+  #dayModal .modal > div:last-of-type { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+  .hour-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .hour-table thead tr { background: var(--teal); position: sticky; top: 0; z-index: 2; }
+  .hour-table thead th {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+    text-transform: uppercase; color: rgba(255,255,255,0.85);
+    text-align: left; padding: 9px 10px; white-space: nowrap;
+  }
+  .hour-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  .hour-table tbody tr:last-child { border-bottom: none; }
+  .hour-table tbody tr:hover { background: var(--teal-light); }
+  .hour-table tbody tr.night-row { background: #F0F4FF; }
+  .hour-table tbody tr.peak-row { background: #FFF3F0; }
+  .hour-table td { padding: 8px 10px; vertical-align: middle; }
+
+  .hour-temp { font-weight: 700; font-size: 14px; }
+  .ht-frost { color: #C53030; }
+  .ht-cold  { color: var(--frost); }
+  .ht-mild  { color: var(--warn); }
+
+  .solar-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    margin-right: 4px; vertical-align: middle;
+  }
+
+  .hbar-sm { display: flex; align-items: center; gap: 4px; }
+  .htrack-sm { width: 40px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .hfill-sm  { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--teal), var(--frost)); }
+
+  .day-summary-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: var(--teal-light); border-bottom: 1px solid var(--border);
+    padding: 10px 14px; gap: 8px; flex-shrink: 0;
+  }
+  .dss-cell { font-size: 12px; }
+  .dss-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+  .dss-val { font-weight: 700; }
+
+  .time-label { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .night-label { font-size: 9px; color: #7090C0; background: #E8EEFF; padding: 1px 5px; border-radius: 8px; margin-left: 3px; }
+  .peak-label  { font-size: 9px; color: #A03020; background: #FFE8E0; padding: 1px 5px; border-radius: 8px; margin-left: 3px; }
+
+  .card-chart-hint {
+    font-size: 11px; color: var(--teal); font-weight: 600;
+    margin-top: 8px; opacity: 0.8;
+  }
+  .card:hover .card-chart-hint { opacity: 1; }
+
+  /* ── CHART MODAL ── */
+  #chartModal .modal { border-radius: 18px 18px 0 0; }
+
+  .chart-modal-body { padding: 16px 18px 24px; }
+
+  .chart-current-val {
+    font-size: 36px; font-weight: 700; letter-spacing: -0.03em;
+    line-height: 1; margin-bottom: 4px;
+  }
+  .chart-current-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+
+  .bar-chart {
+    display: flex; align-items: flex-end; gap: 6px;
+    height: 120px; margin-bottom: 6px;
+  }
+  .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; gap: 4px; }
+  .bar-col .bar-label-val { font-size: 10px; font-weight: 700; color: var(--muted); }
+  .bar-col .bar-rect { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; transition: opacity 0.2s; }
+  .bar-col.today .bar-rect { opacity: 1; }
+  .bar-col:not(.today) .bar-rect { opacity: 0.45; }
+  .bar-col.today .bar-label-val { color: var(--text); font-size: 11px; }
+  .bar-col .bar-day { font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .bar-col.today .bar-day { font-weight: 700; color: var(--teal-dark); }
+
+  .chart-divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .chart-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .cs-cell { background: var(--bg); border-radius: 8px; padding: 10px; }
+  .cs-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .cs-val { font-size: 16px; font-weight: 700; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--teal-dark); color: rgba(255,255,255,0.72);
+    font-size: 12px; padding: 14px 16px; line-height: 1.7;
+  }
+  footer strong { color: white; }
+  footer .footer-inner { max-width: 1100px; margin: 0 auto; }
+
+  /* ════════════════════════════════════════
+     DESKTOP RESPONSIVE (≥ 768px)
+  ════════════════════════════════════════ */
+  @media (min-width: 768px) {
+
+    body { font-size: 16px; }
+
+    /* Wider topbar */
+    .topbar { padding: 0 32px; height: 58px; }
+    .topbar-logo { font-size: 16px; }
+    .logo-circle { width: 34px; height: 34px; }
+    .logo-circle span { font-size: 13px; }
+
+    /* Hero bigger */
+    .hero { padding: 36px 32px 28px; }
+    .hero h1 { font-size: 28px; }
+    .hero-sub { font-size: 12px; }
+
+    /* Alert bar */
+    .alert-bar { padding: 14px 32px; }
+
+    /* Centered content wrapper */
+    .main { padding: 28px 32px 64px; max-width: 1100px; margin: 0 auto; }
+
+    /* Cards: 4 columns on desktop */
+    .cards { grid-template-columns: repeat(4, 1fr); }
+    /* Solar card spans all 4 */
+    .cards > div[style*="span 2"] { grid-column: span 4 !important; }
+
+    /* Card values bigger */
+    .card-value { font-size: 38px; }
+
+    /* Forecast: 2-column grid on desktop */
+    .forecast-list {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .fc-day.today { grid-column: span 2; }
+
+    /* Wind + solar side panels: bigger boxes */
+    .wind-box { padding: 18px 20px; gap: 16px; }
+    .compass { width: 80px; height: 80px; }
+
+    /* Section label */
+    .section-label { font-size: 12px; margin-top: 36px; }
+
+    /* Hist cards: 2-column grid */
+    .hist-cards {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .hist-card.today-card { grid-column: span 2; }
+
+    /* Hist card grid: more columns */
+    .hist-card-grid { grid-template-columns: repeat(4, 1fr); }
+    .hcg-cell:nth-child(3n)  { border-right: 1px solid var(--border); }
+    .hcg-cell:nth-child(4n)  { border-right: none; }
+    .hcg-cell:nth-last-child(-n+4) { border-bottom: none; }
+    .hcg-cell:nth-last-child(-n+3) { border-bottom: 1px solid var(--border); }
+
+    /* Comparison cards side by side */
+    .cmp-card { flex: 1; }
+    div:has(> .cmp-card) { flex-direction: row !important; gap: 12px; }
+
+    /* Column legend: more per row */
+    .col-leg-item { flex: 1 1 calc(25% - 8px); }
+
+    /* Glossary font */
+    .glossary-toggle { font-size: 15px; padding: 15px 18px; }
+    .glossary-body { font-size: 14px; padding: 0 18px 16px 56px; }
+
+    /* Modal: centered dialog on desktop instead of bottom sheet */
+    .modal-overlay { align-items: center; }
+    .modal {
+      border-radius: 16px !important;
+      max-width: 640px;
+      max-height: 85vh;
+      width: 90%;
+      padding-bottom: 0;
+    }
+    .modal-handle { display: none; }
+
+    /* Day modal wider on desktop */
+    #dayModal .modal { max-width: 720px; }
+    #dayModal .modal > div:last-of-type { max-height: calc(85vh - 130px); }
+
+    /* Chart modal */
+    #chartModal .modal { max-width: 560px; border-radius: 16px; }
+    .bar-chart { height: 160px; }
+    .chart-current-val { font-size: 44px; }
+
+    /* Vind & sol grid wider */
+    div[style*="grid-template-columns:1fr 1fr"] {
+      gap: 16px !important;
+    }
+
+    /* Hour table font */
+    .hour-table { font-size: 14px; }
+    .hour-table thead th { font-size: 11px; padding: 11px 14px; }
+    .hour-table td { padding: 10px 14px; }
+
+    /* Info boxes */
+    .info-box { font-size: 14px; }
+
+    /* Tap hints on desktop: show as hover cues */
+    .card-chart-hint { font-size: 12px; }
+    .tap-hint { font-size: 12px; }
+  }
+
+  @media (min-width: 1100px) {
+    /* Very wide: cap and center everything */
+    .topbar > * { max-width: 1100px; }
+    .topbar { justify-content: center; gap: 0; }
+    .topbar > div:first-child { flex: 1; max-width: 1100px; display: flex; justify-content: space-between; }
+
+    .hero { display: flex; justify-content: center; }
+    .hero > div { display: none; } /* inner divs are direct children */
+    .hero { padding-left: 0; padding-right: 0; }
+
+    .forecast-list { grid-template-columns: repeat(4, 1fr) !important; }
+    .fc-day.today { grid-column: span 2 !important; }
+
+    .hist-cards { grid-template-columns: repeat(4, 1fr) !important; }
+    .hist-card.today-card { grid-column: span 2 !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;margin:0 auto;">
+    <div class="topbar-logo">
+      <div class="logo-circle"><span>VE</span></div>
+      Varberg Energi · Fjärrvärme
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;"><div class="topbar-week">V.10 · 2026</div><a href="data.html" style="font-size:12px;color:white;text-decoration:none;background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:20px;white-space:nowrap;">📊 Arkiv</a></div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:1100px;margin:0 auto;width:100%;">
+    <div class="hero-sub">Väderleksrapport · Fjärrvärmedrift</div>
+    <h1>Varberg — 3–9 mars 2026</h1>
+    <div class="hero-meta">Genererad 2026-03-06 06:00</div>
+  </div>
+</div>
+
+<!-- DYNAMIC ALERT BANNER — updated by JS from forecast data -->
+<div id="alert-banner" style="display:none;"></div>
+
+<div class="main">
+
+  <!-- ═══ NULÄGE ═══ -->
+  <div class="section-label" id="nulaege-label">Nuläge · uppdateras...</div>
+  <div class="cards">
+
+    <div class="card c-orange" style="cursor:pointer" onclick="openChartModal('temp')">
+      <div class="card-header">
+        <span class="card-label">Temperatur</span>
+        <button class="info-btn" onclick="event.stopPropagation();toggleInfo('info-temp')">i</button>
+      </div>
+      <div id="info-temp" class="info-box">
+        <strong>Lufttemperatur (°C)</strong><br>
+        Aktuell utomhustemperatur i Varberg. Ju kallare det är, desto mer värme behöver pumpas ut i nätet.
+      </div>
+      <div class="card-value">+2<sup>°C</sup></div>
+      <div class="card-sub">Känns som −1 °C</div>
+      <div class="delta blue">▼ 4° vs fg vecka</div>
+      <div class="card-chart-hint">📈 Tryck för veckograf</div>
+    </div>
+
+    <div class="card c-teal" style="cursor:pointer" onclick="openChartModal('wind')">
+      <div class="card-header">
+        <span class="card-label">Vind</span>
+        <button class="info-btn" onclick="event.stopPropagation();toggleInfo('info-wind')">i</button>
+      </div>
+      <div id="info-wind" class="info-box">
+        <strong>Vindstyrka (m/s)</strong><br>
+        Medelvind och maximal byvind. Vind ökar värmeförlusten från byggnader (vindkyla), vilket höjer behovet av fjärrvärme — särskilt vid vindar över 8–10 m/s.
+      </div>
+      <div class="card-value">8<sup>m/s</sup></div>
+      <div class="card-sub">SV · byar 14 m/s</div>
+      <div class="delta teal">▲ 2 m/s vs fg vecka</div>
+      <div class="card-chart-hint">📈 Tryck för veckograf</div>
+    </div>
+
+    <div class="card c-blue" style="cursor:pointer" onclick="openChartModal('precip')">
+      <div class="card-header">
+        <span class="card-label">Nederbörd</span>
+        <button class="info-btn" onclick="event.stopPropagation();toggleInfo('info-precip')">i</button>
+      </div>
+      <div id="info-precip" class="info-box">
+        <strong>Nederbörd (mm)</strong><br>
+        Mängden regn eller snö under dygnet. Snö och is kan orsaka extra värmeförluster från rör och anslutningar.
+      </div>
+      <div class="card-value">3<sup>mm</sup></div>
+      <div class="card-sub">Idag · snöblandat</div>
+      <div class="delta neutral">≈ fg vecka</div>
+      <div class="card-chart-hint">📈 Tryck för veckograf</div>
+    </div>
+
+    <div class="card c-green" style="cursor:pointer" onclick="openChartModal('humidity')">
+      <div class="card-header">
+        <span class="card-label">Luftfuktighet</span>
+        <button class="info-btn" onclick="event.stopPropagation();toggleInfo('info-hum')">i</button>
+      </div>
+      <div id="info-hum" class="info-box">
+        <strong>Relativ luftfuktighet (%)</strong><br>
+        Hur mycket vattenånga luften innehåller. Hög luftfuktighet (över 80%) i kombination med kyla ökar risken för is- och kondensbildning på rör.
+      </div>
+      <div class="card-value">82<sup>%</sup></div>
+      <div class="card-sub">Daggpunkt −1 °C</div>
+      <div class="delta orange">▲ 5% vs fg vecka</div>
+      <div class="card-chart-hint">📈 Tryck för veckograf</div>
+    </div>
+
+    <!-- Solar card — bar chart moved to popup -->
+    <div class="card c-solar" style="grid-column:span 2; display:grid; grid-template-columns:1fr 1fr; gap:0; padding:0; border-radius:10px; overflow:hidden;">
+      <div style="padding:14px 14px 12px; border-right:1px solid var(--border); cursor:pointer;" onclick="openChartModal('solar')">
+        <div class="card-header">
+          <span class="card-label">Solinstrålning idag</span>
+          <button class="info-btn" onclick="event.stopPropagation();toggleInfo('info-solar')">i</button>
+        </div>
+        <div id="info-solar" class="info-box">
+          <strong>Global solinstrålning (W/m²)</strong><br>
+          Mängden solenergi som når markytan per kvadratmeter. Solinstrålning värmer byggnader passivt och minskar behovet av fjärrvärme.<br><br>
+          <strong>Solreduktionsfaktor</strong> — en solig dag med 300 W/m² kan reducera värmebehov-index med 6–10%.
+        </div>
+        <div class="card-value" style="color:var(--solar)">142<sup>W/m²</sup></div>
+        <div class="card-sub">Idag · delvis mulet</div>
+        <div class="delta" style="background:var(--solar-bg);color:var(--solar);">▼ 38 vs fg vecka</div>
+        <div class="card-chart-hint" style="color:var(--solar)">📈 Tryck för veckograf</div>
+      </div>
+      <div style="padding:14px 14px 12px; background:var(--solar-light); cursor:pointer;" onclick="openChartModal('heatidx')">
+        <div class="card-label" style="margin-bottom:8px;">Solreduktion på värmeidx</div>
+        <div style="font-size:22px;font-weight:700;color:var(--solar);letter-spacing:-0.02em;">−3 <span style="font-size:13px;font-weight:400;color:var(--muted);">index-enheter</span></div>
+        <div class="card-sub">Utan sol: index 58 → med sol: 55</div>
+        <div class="card-chart-hint" style="color:var(--solar);margin-top:10px;">📈 Tryck för veckograf</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ VIND & SOL INFO ═══ -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;margin-top:28px;">
+
+    <!-- Wind box -->
+    <div>
+      <div class="section-label" style="margin-top:0;margin-bottom:10px;">Vind
+        <button class="info-btn" style="margin-left:0" onclick="toggleInfo('info-windbox')">i</button>
+      </div>
+      <div id="info-windbox" class="info-box" style="margin-bottom:10px;margin-top:-8px;">
+        <strong>Vindkyla</strong> — hur kallt det känns pga. vinden. Viktig för att bedöma faktiska värmeförluster.<br><br>
+        <strong>Effekt på värmelast</strong> — vid byvindar över 10 m/s ökar värmebehovet med ca 8–12%.
+      </div>
+      <div class="wind-box" style="flex-direction:column;align-items:stretch;gap:12px;padding:14px;">
+        <div style="display:flex;justify-content:center;">
+          <div class="compass">
+            <span class="cn">N</span><span class="cs">S</span><span class="ce">O</span><span class="cw">V</span>
+            <div class="carrow"></div><div class="cdot"></div>
+          </div>
+        </div>
+        <div class="wind-rows">
+          <div class="wrow"><span class="l">Riktning</span><span class="v">SV → NO</span></div>
+          <div class="wrow"><span class="l">Medel</span><span class="v">5,8 m/s</span></div>
+          <div class="wrow"><span class="l">Byar</span><span class="v">14 m/s</span></div>
+          <div class="wrow"><span class="l">Vindkyla lör</span><span class="v">−12 °C</span></div>
+          <div class="wrow"><span class="l">Värmelast</span><span class="v">+8–12%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solar box -->
+    <div>
+      <div class="section-label" style="margin-top:0;margin-bottom:10px;">Solinstrålning
+        <button class="info-btn" style="margin-left:0" onclick="toggleInfo('info-solarbox')">i</button>
+      </div>
+      <div id="info-solarbox" class="info-box" style="margin-bottom:10px;margin-top:-8px;">
+        <strong>Global solinstrålning (W/m²)</strong> — solenergi per m² markkyta. Minskar fjärrvärmebehovet via passiv solvärme i byggnader.<br><br>
+        <strong>Solreduktion</strong> — sänkning av värmebehov-index. Formel: <em>instrålning × 0,025</em>.
+      </div>
+      <div class="wind-box" style="flex-direction:column;align-items:stretch;gap:12px;padding:14px;">
+        <!-- Sun arc diagram -->
+        <div style="display:flex;justify-content:center;align-items:flex-end;height:72px;position:relative;">
+          <svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- arc track -->
+            <path d="M 10 58 A 45 45 0 0 1 100 58" stroke="#E8D0A0" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <!-- filled arc ~40% of day (142 W/m²) -->
+            <path d="M 10 58 A 45 45 0 0 1 60 15" stroke="#D97B10" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <!-- sun dot -->
+            <circle cx="60" cy="15" r="6" fill="#D97B10"/>
+            <!-- rays -->
+            <line x1="60" y1="5"  x2="60" y2="2"  stroke="#D97B10" stroke-width="2" stroke-linecap="round"/>
+            <line x1="70" y1="8"  x2="72" y2="6"  stroke="#D97B10" stroke-width="2" stroke-linecap="round"/>
+            <line x1="74" y1="18" x2="77" y2="17" stroke="#D97B10" stroke-width="2" stroke-linecap="round"/>
+            <line x1="50" y1="8"  x2="48" y2="6"  stroke="#D97B10" stroke-width="2" stroke-linecap="round"/>
+            <!-- horizon line -->
+            <line x1="4" y1="58" x2="106" y2="58" stroke="#D8E4E2" stroke-width="1.5"/>
+            <!-- sunrise label: centered under left end of arc (x=10) -->
+            <text x="10" y="70" font-size="8" fill="#8AA" font-family="sans-serif" text-anchor="middle">06:42</text>
+            <!-- sunset label: centered under right end of arc (x=100) -->
+            <text x="100" y="70" font-size="8" fill="#8AA" font-family="sans-serif" text-anchor="middle">18:08</text>
+          </svg>
+        </div>
+        <div class="wind-rows">
+          <div class="wrow"><span class="l">Idag</span><span class="v" style="color:var(--solar)">142 W/m²</span></div>
+          <div class="wrow"><span class="l">Veckans max</span><span class="v" style="color:var(--solar)">340 W/m²</span></div>
+          <div class="wrow"><span class="l">Solreduktion idag</span><span class="v" style="color:var(--solar)">−3 idx</span></div>
+          <div class="wrow"><span class="l">Soluppgång</span><span class="v">06:42</span></div>
+          <div class="wrow"><span class="l">Solnedgång</span><span class="v">18:08</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ 7-DYGNSPROGNOS ═══ -->
+  <div class="section-label">7-dygnsprognos
+    <button class="info-btn" style="margin-left:0" onclick="toggleInfo('info-forecast')">i</button>
+  </div>
+  <div id="info-forecast" class="info-box" style="margin-bottom:12px; margin-top:-6px;">
+    <strong>Hur läser man prognosen?</strong><br>
+    <strong>Max/Min °C</strong> — dagens högsta och lägsta temperatur. Minimigraden (natttemperatur) avgör om det är frostnatt.<br>
+    <strong>Vind (m/s)</strong> — medelvind / maximal byvind för dagen.<br>
+    <strong>☀️ Sol (W/m²)</strong> — förväntad global solinstrålning. Höga värden reducerar värmebehov-index.<br>
+    <strong>Värmebehov %</strong> — solkorrigerat index: temperatur + vindkyla − solreduktion. Grå del visar hur mycket solen sänkt indexet den dagen.
+  </div>
+
+  <div class="forecast-list">
+    <div class="fc-day today" onclick="openDayModal('wed')" style="cursor:pointer">
+      <div class="fc-top">
+        <span class="fc-dayname">Ons</span><span class="fc-date">6 mar</span>
+        <div class="fc-temps"><span class="fc-hi">+3°</span><span class="fc-lo">0°</span></div>
+        <span class="badge b-snow">Snöblandat</span>
+      </div>
+      <div class="fc-bottom">
+        <div class="fc-stat"><div class="fc-stat-label">Vind</div><div class="fc-stat-val">8/14 m/s SV</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">☀️ Sol</div><div class="fc-stat-val" style="color:var(--solar)">142 W/m²</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">Värmebehov <span style="color:var(--solar);font-size:9px">−3 sol</span></div>
+          <div class="hbar"><div class="htrack"><div class="hfill" style="width:55%"></div><div style="height:100%;background:#F5D9A8;width:3%;display:inline-block;"></div></div><span class="hpct">55%</span></div></div>
+      </div>
+      <div style="padding:5px 14px 8px;font-size:11px;color:var(--teal);font-weight:600;">↗ Tryck för timvisning</div>
+    </div>
+    <div class="fc-day" onclick="openDayModal('thu')" style="cursor:pointer">
+      <div class="fc-top">
+        <span class="fc-dayname">Tor</span><span class="fc-date">7 mar</span>
+        <div class="fc-temps"><span class="fc-hi">+1°</span><span class="fc-lo">−2°</span></div>
+        <span class="badge b-cloud">Mulet</span>
+      </div>
+      <div class="fc-bottom">
+        <div class="fc-stat"><div class="fc-stat-label">Vind</div><div class="fc-stat-val">6/10 m/s N</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">☀️ Sol</div><div class="fc-stat-val" style="color:var(--solar)">85 W/m²</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">Värmebehov <span style="color:var(--solar);font-size:9px">−2 sol</span></div>
+          <div class="hbar"><div class="htrack"><div class="hfill" style="width:65%"></div></div><span class="hpct">65%</span></div></div>
+      </div>
+      <div style="padding:5px 14px 8px;font-size:11px;color:var(--teal);font-weight:600;">↗ Tryck för timvisning</div>
+    </div>
+    <div class="fc-day" onclick="openDayModal('fri')" style="cursor:pointer">
+      <div class="fc-top">
+        <span class="fc-dayname">Fre</span><span class="fc-date">8 mar</span>
+        <div class="fc-temps"><span class="fc-lo">−1°</span><span class="fc-frost">−4°</span></div>
+        <span class="badge b-sun">Klart</span>
+      </div>
+      <div class="fc-bottom">
+        <div class="fc-stat"><div class="fc-stat-label">Vind</div><div class="fc-stat-val">5/9 m/s NO</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">☀️ Sol</div><div class="fc-stat-val" style="color:var(--solar)">310 W/m²</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">Värmebehov <span style="color:var(--solar);font-size:9px">−7 sol</span></div>
+          <div class="hbar"><div class="htrack"><div class="hfill" style="width:65%"></div><div style="height:100%;background:#F5D9A8;width:7%;display:inline-block;"></div></div><span class="hpct">65%</span></div></div>
+      </div>
+      <div style="padding:5px 14px 8px;font-size:11px;color:var(--teal);font-weight:600;">↗ Tryck för timvisning</div>
+    </div>
+    <div class="fc-day" onclick="openDayModal('sat')" style="cursor:pointer">
+      <div class="fc-top">
+        <span class="fc-dayname">Lör</span><span class="fc-date">9 mar</span>
+        <div class="fc-temps"><span class="fc-frost">−3°</span><span class="fc-frost">−6°</span></div>
+        <span class="badge b-frost">❄ Frost</span>
+      </div>
+      <div class="fc-bottom">
+        <div class="fc-stat"><div class="fc-stat-label">Vind</div><div class="fc-stat-val">4/7 m/s NO</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">☀️ Sol</div><div class="fc-stat-val" style="color:var(--solar)">340 W/m²</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">Värmebehov <span style="color:var(--solar);font-size:9px">−8 sol</span></div>
+          <div class="hbar"><div class="htrack"><div class="hfill" style="width:77%"></div><div style="height:100%;background:#F5D9A8;width:8%;display:inline-block;"></div></div><span class="hpct">77%</span></div></div>
+      </div>
+      <div style="padding:5px 14px 8px;font-size:11px;color:var(--teal);font-weight:600;">↗ Tryck för timvisning</div>
+    </div>
+    <div class="fc-day" onclick="openDayModal('sun')" style="cursor:pointer">
+      <div class="fc-top">
+        <span class="fc-dayname">Sön</span><span class="fc-date">10 mar</span>
+        <div class="fc-temps"><span class="fc-frost">−4°</span><span class="fc-frost">−8°</span></div>
+        <span class="badge b-frost">❄ Stark frost</span>
+      </div>
+      <div class="fc-bottom">
+        <div class="fc-stat"><div class="fc-stat-label">Vind</div><div class="fc-stat-val">3/6 m/s O</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">☀️ Sol</div><div class="fc-stat-val" style="color:var(--solar)">295 W/m²</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">Värmebehov <span style="color:var(--solar);font-size:9px">−7 sol</span></div>
+          <div class="hbar"><div class="htrack"><div class="hfill" style="width:88%"></div><div style="height:100%;background:#F5D9A8;width:7%;display:inline-block;"></div></div><span class="hpct">88%</span></div></div>
+      </div>
+      <div style="padding:5px 14px 8px;font-size:11px;color:var(--teal);font-weight:600;">↗ Tryck för timvisning</div>
+    </div>
+    <div class="fc-day" onclick="openDayModal('mon')" style="cursor:pointer">
+      <div class="fc-top">
+        <span class="fc-dayname">Mån</span><span class="fc-date">11 mar</span>
+        <div class="fc-temps"><span class="fc-lo">−1°</span><span class="fc-frost">−3°</span></div>
+        <span class="badge b-snow">Snö</span>
+      </div>
+      <div class="fc-bottom">
+        <div class="fc-stat"><div class="fc-stat-label">Vind</div><div class="fc-stat-val">5/8 m/s SV</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">☀️ Sol</div><div class="fc-stat-val" style="color:var(--solar)">110 W/m²</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">Värmebehov <span style="color:var(--solar);font-size:9px">−3 sol</span></div>
+          <div class="hbar"><div class="htrack"><div class="hfill" style="width:75%"></div><div style="height:100%;background:#F5D9A8;width:3%;display:inline-block;"></div></div><span class="hpct">75%</span></div></div>
+      </div>
+      <div style="padding:5px 14px 8px;font-size:11px;color:var(--teal);font-weight:600;">↗ Tryck för timvisning</div>
+    </div>
+    <div class="fc-day" onclick="openDayModal('tue')" style="cursor:pointer">
+      <div class="fc-top">
+        <span class="fc-dayname">Tis</span><span class="fc-date">12 mar</span>
+        <div class="fc-temps"><span class="fc-hi">+2°</span><span class="fc-lo">−1°</span></div>
+        <span class="badge b-snow">Snöblandat</span>
+      </div>
+      <div class="fc-bottom">
+        <div class="fc-stat"><div class="fc-stat-label">Vind</div><div class="fc-stat-val">7/12 m/s V</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">☀️ Sol</div><div class="fc-stat-val" style="color:var(--solar)">70 W/m²</div></div>
+        <div class="fc-stat"><div class="fc-stat-label">Värmebehov <span style="color:var(--solar);font-size:9px">−1 sol</span></div>
+          <div class="hbar"><div class="htrack"><div class="hfill" style="width:61%"></div><div style="height:100%;background:#F5D9A8;width:1%;display:inline-block;"></div></div><span class="hpct">61%</span></div></div>
+      </div>
+      <div style="padding:5px 14px 8px;font-size:11px;color:var(--teal);font-weight:600;">↗ Tryck för timvisning</div>
+    </div>
+  </div>
+
+  <!-- ═══ JÄMFÖRELSE ═══ -->
+  <div class="section-label">Historisk jämförelse
+    <button class="info-btn" style="margin-left:0" onclick="toggleInfo('info-compare')">i</button>
+  </div>
+  <div id="info-compare" class="info-box" style="margin-bottom:12px; margin-top:-6px;">
+    Visar hur den aktuella veckan skiljer sig från tidigare perioder. Används för att bedöma om driftläget är normalt eller om extra åtgärder behövs. Ett högre <strong>Värmebehov-index</strong> jämfört med förra veckan innebär att nätet behöver leverera mer energi.
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px;">
+  <div class="cmp-card">
+    <h4>vs. föregående vecka (v.9)</h4>
+    <div class="crow"><span class="l">Medeltemperatur</span><span class="v neg">−3,2°</span></div>
+    <div class="crow"><span class="l">Frostdygn</span><span class="v neg">+2 dygn</span></div>
+    <div class="crow"><span class="l">Total nederbörd</span><span class="v neg">+2 mm</span></div>
+    <div class="crow"><span class="l">Värmebehov-index</span><span class="v neg">+14%</span></div>
+  </div>
+  <div class="cmp-card">
+    <h4>vs. samma vecka 2025</h4>
+    <div class="crow"><span class="l">Medeltemperatur</span><span class="v pos">+1,1°</span></div>
+    <div class="crow"><span class="l">Frostdygn</span><span class="v neu">±0 dygn</span></div>
+    <div class="crow"><span class="l">Total nederbörd</span><span class="v pos">−5 mm</span></div>
+    <div class="crow"><span class="l">Värmebehov-index</span><span class="v neg">+4%</span></div>
+  </div>
+  </div>
+
+  <!-- ═══ HISTORISK DATA ═══ -->
+  <div class="section-label">Historisk data — senaste 4 veckor
+    <button class="info-btn" style="margin-left:0" onclick="toggleInfo('info-hist')">i</button>
+  </div>
+  <div id="info-hist" class="info-box" style="margin-bottom:12px; margin-top:-6px;">
+    Historiska veckovärden används för att jämföra aktuellt driftläge med tidigare perioder och planera underhåll. Tryck på valfri kolumnrubrik nedan för att läsa vad den mäter.
+  </div>
+
+  <!-- Column legend — tap to expand -->
+  <div class="col-legend">
+    <div class="col-leg-item">
+      <button class="col-leg-btn" onclick="toggleInfo('cleg-medel')">🌡️ Medel °C</button>
+      <div id="cleg-medel" class="info-box">
+        <strong>Medeltemperatur för veckan (°C)</strong><br>
+        Genomsnittet av alla dygnsmedeltemperaturer under veckan. Är den viktigaste enskilda faktorn för hur mycket fjärrvärme som levererades. Blå = minusgrader, orange = plusgrader.
+      </div>
+    </div>
+    <div class="col-leg-item">
+      <button class="col-leg-btn" onclick="toggleInfo('cleg-minmax')">↕️ Min / Max</button>
+      <div id="cleg-minmax" class="info-box">
+        <strong>Veckans lägsta och högsta temperatur (°C)</strong><br>
+        Minimigraden (lägst) avgör frostrisken och dimensionerar behovet av framledningsjustering nattetid. Maximigraden visar när nätet kan köras ned på lägre effekt.
+      </div>
+    </div>
+    <div class="col-leg-item">
+      <button class="col-leg-btn" onclick="toggleInfo('cleg-frost')">❄️ Frostdygn</button>
+      <div id="cleg-frost" class="info-box">
+        <strong>Antal dygn med minusgrader under natten</strong><br>
+        Ett dygn räknas som frostdygn om minimigraden understiger 0 °C. Fler frostdygn innebär ökad risk för frysning i kulvertperiferin och hos kunder med låg förbrukning.
+        <div class="example">💡 Vid 3+ frostdygn i rad: prioritera rondning av ytterledningar.</div>
+      </div>
+    </div>
+    <div class="col-leg-item">
+      <button class="col-leg-btn" onclick="toggleInfo('cleg-precip')">🌧️ Precip. (mm)</button>
+      <div id="cleg-precip" class="info-box">
+        <strong>Total nederbörd under veckan (millimeter)</strong><br>
+        Summan av regn och snö (omräknat till mm vatten). Hög nederbörd i kombination med kyla kan orsaka isbildning på rör och anslutningspunkter och öka underhållsbehovet.
+      </div>
+    </div>
+    <div class="col-leg-item">
+      <button class="col-leg-btn" onclick="toggleInfo('cleg-vind')">💨 Vind (m/s)</button>
+      <div id="cleg-vind" class="info-box">
+        <strong>Medelvindstyrka för veckan (meter per sekund)</strong><br>
+        Hög medelvind ökar värmeförlusterna från byggnader och kulvertar. Vid medelvind över 6–7 m/s är det vanligt att fjärrvärmebehovet ökar med 5–15% jämfört med vindstilla dagar med samma temperatur.
+      </div>
+    </div>
+    <div class="col-leg-item">
+      <button class="col-leg-btn" onclick="toggleInfo('cleg-idx')">📊 Värmeidx</button>
+      <div id="cleg-idx" class="info-box">
+        <strong>Värmebehov-index för veckan (0–100)</strong><br>
+        Solkorrigerat index som tar hänsyn till temperatur, vind <em>och</em> solinstrålning. Hög instrålning under veckan sänker indexet jämfört med ett rent temperaturbaserat index. 100 = maxlast för säsongen.
+        <div class="example">💡 Index över 80: kontrollera att alla produktionsenheter är tillgängliga.</div>
+      </div>
+    </div>
+    <div class="col-leg-item">
+      <button class="col-leg-btn" onclick="toggleInfo('cleg-sol')">☀️ Sol (W/m²)</button>
+      <div id="cleg-sol" class="info-box">
+        <strong>Medel solinstrålning för veckan (W/m²)</strong><br>
+        Genomsnittlig global solinstrålning. Används för att beräkna solreduktionen på värmebehov-index. Klara vinterdagar i mars kan ge 250–350 W/m², vilket märkbart sänker värmebehovet mitt på dagen.
+      </div>
+    </div>
+  </div>
+
+  <!-- Historik kort per vecka -->
+  <div class="hist-cards">
+
+    <div class="hist-card today-card" onclick="openWeekModal('v10')">
+      <div class="hist-card-header">
+        <div>
+          <div class="hist-week-badge">V.10 <span class="prog-tag">prognos</span></div>
+          <div class="tap-hint">↗ Tryck för daglig detaljvy</div>
+        </div>
+        <div class="hist-period">3–9 mars 2026</div>
+        <div class="hist-idx-big"><strong>78</strong><span>idx <button class="info-btn" onclick="event.stopPropagation();toggleInfo('info-idx-explain')" style="vertical-align:middle">i</button></span></div>
+      </div>
+      <div id="info-idx-explain" class="info-box" style="margin:0 14px 10px;display:none">
+        <strong>Vad betyder 78 idx?</strong><br>
+        Värmebehov-index visar hur stor andel av nätets maxkapacitet som behövs denna vecka. <strong>78 av 100</strong> innebär att nätet körs på 78% av sin högsta säsongsbelastning.<br><br>
+        Beräknat som: <em>Temp-komponent (83) + Vindtillägg (+5) − Solreduktion (−10) = 78</em>
+      </div>
+      <div class="hist-card-grid">
+        <div class="hcg-cell"><div class="hcg-label">Medel</div><div class="hcg-val lo">−1,4°</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Min/Max</div><div class="hcg-val">−8° / +3°</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Frostdygn</div><div class="hcg-val">4</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Nederbörd</div><div class="hcg-val">10 mm</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Medelvind</div><div class="hcg-val">5,8 m/s</div></div>
+        <div class="hcg-cell"><div class="hcg-label">☀️ Medelinstr.</div><div class="hcg-val" style="color:var(--solar)">243 W/m²</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Solreduktion</div><div class="hcg-val" style="color:var(--solar)">−5 idx</div></div>
+        <div class="hcg-cell" style="grid-column:span 2"><div class="hcg-label">Värmebehov</div><div class="hbar"><div class="htrack"><div class="hfill" style="width:73%"></div><div style="height:100%;background:#F5D9A8;width:5%;display:inline-block;"></div></div><span class="hpct">73%</span></div></div>
+      </div>
+    </div>
+
+    <div class="hist-card" onclick="openWeekModal('v9')">
+      <div class="hist-card-header">
+        <div>
+          <div class="hist-week-badge">V.9</div>
+          <div class="tap-hint">↗ Tryck för daglig detaljvy</div>
+        </div>
+        <div class="hist-period">24 feb – 2 mar</div>
+        <div class="hist-idx-big">64<span>idx</span></div>
+      </div>
+      <div class="hist-card-grid">
+        <div class="hcg-cell"><div class="hcg-label">Medel</div><div class="hcg-val hi">+1,8°</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Min/Max</div><div class="hcg-val">−2° / +6°</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Frostdygn</div><div class="hcg-val">2</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Nederbörd</div><div class="hcg-val">8 mm</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Medelvind</div><div class="hcg-val">5,0 m/s</div></div>
+        <div class="hcg-cell"><div class="hcg-label">☀️ Medelinstr.</div><div class="hcg-val" style="color:var(--solar)">181 W/m²</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Solreduktion</div><div class="hcg-val" style="color:var(--solar)">−3 idx</div></div>
+        <div class="hcg-cell" style="grid-column:span 2"><div class="hcg-label">Värmebehov</div><div class="hbar"><div class="htrack"><div class="hfill" style="width:61%"></div><div style="height:100%;background:#F5D9A8;width:3%;display:inline-block;"></div></div><span class="hpct">61%</span></div></div>
+      </div>
+    </div>
+
+    <div class="hist-card" onclick="openWeekModal('v8')">
+      <div class="hist-card-header">
+        <div>
+          <div class="hist-week-badge">V.8</div>
+          <div class="tap-hint">↗ Tryck för daglig detaljvy</div>
+        </div>
+        <div class="hist-period">17–23 feb</div>
+        <div class="hist-idx-big">52<span>idx</span></div>
+      </div>
+      <div class="hist-card-grid">
+        <div class="hcg-cell"><div class="hcg-label">Medel</div><div class="hcg-val hi">+3,2°</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Min/Max</div><div class="hcg-val">0° / +8°</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Frostdygn</div><div class="hcg-val">0</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Nederbörd</div><div class="hcg-val">14 mm</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Medelvind</div><div class="hcg-val">6,5 m/s</div></div>
+        <div class="hcg-cell"><div class="hcg-label">☀️ Medelinstr.</div><div class="hcg-val" style="color:var(--solar)">148 W/m²</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Solreduktion</div><div class="hcg-val" style="color:var(--solar)">−2 idx</div></div>
+        <div class="hcg-cell" style="grid-column:span 2"><div class="hcg-label">Värmebehov</div><div class="hbar"><div class="htrack"><div class="hfill" style="width:50%"></div><div style="height:100%;background:#F5D9A8;width:2%;display:inline-block;"></div></div><span class="hpct">50%</span></div></div>
+      </div>
+    </div>
+
+    <div class="hist-card" onclick="openWeekModal('v7')">
+      <div class="hist-card-header">
+        <div>
+          <div class="hist-week-badge">V.7</div>
+          <div class="tap-hint">↗ Tryck för daglig detaljvy</div>
+        </div>
+        <div class="hist-period">10–16 feb</div>
+        <div class="hist-idx-big">71<span>idx</span></div>
+      </div>
+      <div class="hist-card-grid">
+        <div class="hcg-cell"><div class="hcg-label">Medel</div><div class="hcg-val lo">−0,5°</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Min/Max</div><div class="hcg-val">−5° / +4°</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Frostdygn</div><div class="hcg-val">3</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Nederbörd</div><div class="hcg-val">6 mm</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Medelvind</div><div class="hcg-val">4,2 m/s</div></div>
+        <div class="hcg-cell"><div class="hcg-label">☀️ Medelinstr.</div><div class="hcg-val" style="color:var(--solar)">112 W/m²</div></div>
+        <div class="hcg-cell"><div class="hcg-label">Solreduktion</div><div class="hcg-val" style="color:var(--solar)">−2 idx</div></div>
+        <div class="hcg-cell" style="grid-column:span 2"><div class="hcg-label">Värmebehov</div><div class="hbar"><div class="htrack"><div class="hfill" style="width:69%"></div><div style="height:100%;background:#F5D9A8;width:2%;display:inline-block;"></div></div><span class="hpct">69%</span></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ ORDLISTA ═══ -->
+  <div class="section-label">Ordlista &amp; förklaringar</div>
+  <div class="glossary">
+
+    <div class="glossary-item">
+      <button class="glossary-toggle" onclick="toggleGlossary(this)">
+        <span class="glossary-toggle-left"><span class="glossary-icon">🌡️</span> Framledningstemperatur</span>
+        <span class="glossary-chevron">▼</span>
+      </button>
+      <div class="glossary-body">
+        <p>Temperaturen på det vatten som pumpas ut i fjärrvärmenätet från produktionsanläggningen. Ju kallare det är ute, desto högre framledningstemperatur krävs för att kunderna ska få tillräckligt med värme.</p>
+        <p>Vid −8 °C ute kan framledningstemperaturen behöva vara 90–100 °C, medan den vid +5 °C kanske bara behöver vara 60–70 °C.</p>
+        <div class="example">💡 Tumregel: För varje grad kallare ute, öka framledningstemperaturen med ca 1–2 °C.</div>
+      </div>
+    </div>
+
+    <div class="glossary-item">
+      <button class="glossary-toggle" onclick="toggleGlossary(this)">
+        <span class="glossary-toggle-left"><span class="glossary-icon">📊</span> Värmebehov-index</span>
+        <span class="glossary-chevron">▼</span>
+      </button>
+      <div class="glossary-body">
+        <p>Ett relativt mått (0–100) på hur stor värmelast fjärrvärmenätet förväntas behöva leverera. 100 motsvarar maximal belastning för säsongen (typiskt vid −15 °C eller kallare utan sol).</p>
+        <p>Indexet beräknas med tre faktorer:</p>
+        <p><strong>1. Temperaturkomponent</strong> — baserat på graddagar (HDD, referens 17 °C). Står för ~75% av indexet.</p>
+        <p><strong>2. Vindkomponent</strong> — vindkyla ökar värmeförlusterna. Tillför upp till +12 indexenheter vid stark vind.</p>
+        <p><strong>3. Solreduktion</strong> — solinstrålning (W/m²) minskar behovet via passiv solvärme i byggnader. Beräknas som: <em>reduktion = instrålning × 0,025</em> (max −12 indexenheter per dag).</p>
+        <p>Formel: <em>Index = HDD-komponent + Vindtillägg − Solreduktion</em></p>
+        <div class="example">💡 En solig dag med 320 W/m² kan sänka index med 8 enheter — t.ex. från 85 till 77 — vilket kan motsvara hundratals MWh i minskad produktion.</div>
+      </div>
+    </div>
+
+    <div class="glossary-item">
+      <button class="glossary-toggle" onclick="toggleGlossary(this)">
+        <span class="glossary-toggle-left"><span class="glossary-icon">☀️</span> Solinstrålning &amp; solreduktion</span>
+        <span class="glossary-chevron">▼</span>
+      </button>
+      <div class="glossary-body">
+        <p><strong>Global solinstrålning (W/m²)</strong> är den totala solenergi som träffar en horisontell yta per sekund och kvadratmeter. Den inkluderar direkt solljus och diffus himmelstrålning.</p>
+        <p>I Varberg (57°N) varierar instrålningen kraftigt med årstid och molnighet:</p>
+        <p>• Klart marsväder: 250–380 W/m²<br>• Delvis mulet: 80–180 W/m²<br>• Mulet/snöväder: 20–80 W/m²</p>
+        <p><strong>Solreduktionen</strong> på värmebehov-index är den sänkning av index som solinstrålningen orsakar. Byggnader absorberar solenergi genom fönster och väggar (passiv solvärme), vilket minskar fjärrvärmebehovet mitt på dagen.</p>
+        <p>Formel: <em>Solreduktion = instrålning (W/m²) × 0,025</em></p>
+        <div class="example">💡 Källa: SMHI Strålningsdata (parameter: globalstrålning, W/m²). Tillgänglig via SMHI Open Data API.</div>
+      </div>
+    </div>
+
+    <div class="glossary-item">
+      <button class="glossary-toggle" onclick="toggleGlossary(this)">
+        <span class="glossary-toggle-left"><span class="glossary-icon">❄️</span> Frostdygn</span>
+        <span class="glossary-chevron">▼</span>
+      </button>
+      <div class="glossary-body">
+        <p>Ett dygn räknas som frostdygn om minimigraden (lägsta temperatur under natten) understiger 0 °C. Frostdygn är viktiga att följa eftersom de ökar risken för frysning i periferin av nätet och hos kunder med låg förbrukning.</p>
+        <div class="example">💡 Vid 3+ sammanhängande frostdygn bör underhållsrond av ytterledningar prioriteras.</div>
+      </div>
+    </div>
+
+    <div class="glossary-item">
+      <button class="glossary-toggle" onclick="toggleGlossary(this)">
+        <span class="glossary-toggle-left"><span class="glossary-icon">🌬️</span> Vindkyla</span>
+        <span class="glossary-chevron">▼</span>
+      </button>
+      <div class="glossary-body">
+        <p>Vindkylan (även kallad "känns som"-temperaturen) beskriver hur kallt det upplevs på grund av vindens kylande effekt. Beräknas enligt SMHI:s formel och är relevant för att bedöma faktiska värmeförluster från byggnader och kulvertar.</p>
+        <p>Exempel: Om det är −4 °C med 8 m/s vind, känns det som −12 °C — och byggnader förlorar värme i motsvarande takt.</p>
+        <div class="example">💡 Vindkyla under −10 °C är en signal om att höja framledningstemperaturen proaktivt.</div>
+      </div>
+    </div>
+
+    <div class="glossary-item">
+      <button class="glossary-toggle" onclick="toggleGlossary(this)">
+        <span class="glossary-toggle-left"><span class="glossary-icon">💧</span> Daggpunkt</span>
+        <span class="glossary-chevron">▼</span>
+      </button>
+      <div class="glossary-body">
+        <p>Den temperatur vid vilken luften är mättad med vattenånga och kondensation börjar bildas. Om yttemperaturen på rör eller komponenter sjunker under daggpunkten kan fukt samlas, vilket ökar korrosionsrisk.</p>
+        <div class="example">💡 Daggpunkt nära 0 °C kombinerat med kyla indikerar risk för isbildning på exponerade ytor.</div>
+      </div>
+    </div>
+
+    <div class="glossary-item">
+      <button class="glossary-toggle" onclick="toggleGlossary(this)">
+        <span class="glossary-toggle-left"><span class="glossary-icon">📐</span> Graddagar (HDD)</span>
+        <span class="glossary-chevron">▼</span>
+      </button>
+      <div class="glossary-body">
+        <p><strong>Heating Degree Days (HDD)</strong> är ett standardmått på uppvärmningsbehovet. Beräknas som skillnaden mellan referenstemperaturen (17 °C) och medeltemperaturen för dagen — om medeltemperaturen är lägre.</p>
+        <p>Formel: HDD = max(0, 17°C − medeltemp)</p>
+        <p>Exempel: En dag med medeltemperatur +2 °C ger 15 HDD. Dessa summeras per vecka för att jämföra energiförbrukning mellan perioder.</p>
+        <div class="example">💡 Graddagar används för att fakturera och budgetera energileverans rättvist oavsett vädervariation.</div>
+      </div>
+    </div>
+
+    <div class="glossary-item">
+      <button class="glossary-toggle" onclick="toggleGlossary(this)">
+        <span class="glossary-toggle-left"><span class="glossary-icon">🔵</span> Färgkodning i rapporten</span>
+        <span class="glossary-chevron">▼</span>
+      </button>
+      <div class="glossary-body">
+        <p><strong style="color:#C94A2B">Orange/röd temperatur</strong> — positiv temperatur (över 0 °C, max för dagen).</p>
+        <p><strong style="color:#0057A8">Blå temperatur</strong> — minusgrader (under 0 °C, min för dagen).</p>
+        <p><strong style="color:#C53030">Mörkröd temperatur</strong> — frosttemperatur (under −3 °C, varningsnivå).</p>
+        <p><strong style="color:#0057A8">Blå jämförelsepil ▼</strong> — värdet är lägre/kallare än referensperioden.</p>
+        <p><strong style="color:#C94A2B">Orange jämförelsepil ▲</strong> — värdet är högre/varmare än referensperioden.</p>
+      </div>
+    </div>
+
+  </div><!-- /glossary -->
+
+</div><!-- /main -->
+
+<footer>
+  <div class="footer-inner">
+    <strong>Varberg Energi AB</strong> · Fjärrvärme Drift<br>
+    <span id="footer-station">
+      Datakälla: SMHI Open Data · Station Getterön (ID 72450) · lat 57.106, lon 12.254
+    </span><br>
+    <span id="footer-wind-factor" style="opacity:0.75;font-size:12px;">
+      Vindkorrektion: ×0.85 (kuststation → stadsmiljö)
+    </span>
+  </div>
+</footer>
+
+<!-- ░░ CHART MODAL ░░ -->
+<div class="modal-overlay" id="chartModal" onclick="closeChartOnOverlay(event)">
+  <div class="modal" id="chartModalContent" style="border-radius:18px 18px 0 0;">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="chartModalTitle">—</div>
+        <div class="modal-subtitle" id="chartModalSubtitle">Veckoutveckling · Varberg</div>
+      </div>
+      <button class="modal-close" onclick="closeChartModal()">✕</button>
+    </div>
+    <div class="chart-modal-body" id="chartModalBody"></div>
+  </div>
+</div>
+
+<!-- ░░ WEEK DETAIL MODAL ░░ -->
+<div class="modal-overlay" id="weekModal" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modalContent">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">—</div>
+        <div class="modal-subtitle" id="modalSubtitle">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ░░ DAY HOURLY MODAL ░░ -->
+<div class="modal-overlay" id="dayModal" onclick="closeModalOnOverlayDay(event)">
+  <div class="modal" id="dayModalContent" style="display:flex;flex-direction:column;max-height:90vh;">
+    <div class="modal-handle"></div>
+    <div class="modal-header" style="flex-shrink:0;">
+      <div>
+        <div class="modal-title" id="dayModalTitle">—</div>
+        <div class="modal-subtitle" id="dayModalSubtitle">Timvis prognos · Varberg</div>
+      </div>
+      <button class="modal-close" onclick="closeDayModal()">✕</button>
+    </div>
+    <div class="day-summary-strip" id="daySummaryStrip" style="flex-shrink:0;"></div>
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overflow-x:auto;">
+      <table class="hour-table">
+        <thead>
+          <tr>
+            <th>Tid</th>
+            <th>Temp</th>
+            <th>Känns</th>
+            <th>Vind m/s</th>
+            <th>☀️ Sol</th>
+            <th>Fukt %</th>
+            <th>Värme</th>
+          </tr>
+        </thead>
+        <tbody id="hourTableBody"></tbody>
+      </table>
+      <div style="padding:10px 16px 16px;font-size:11px;color:var(--muted);line-height:1.8;">
+        <span style="background:#F0F4FF;padding:2px 7px;border-radius:4px;margin-right:6px;">Natt 00–06</span>
+        <span style="background:#FFF3F0;padding:2px 7px;border-radius:4px;margin-right:6px;">Toppbelastning</span>
+        ☀️ = solreduktion på värmeidx
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── chart modal ── */
+  const chartConfigs = {
+    temp: {
+      title: 'Temperatur', subtitle: 'Medeltemperatur per dag (°C)',
+      current: '+2°C', currentSub: 'Idag ons 6 mar · känns som −1°C',
+      color: '#C94A2B', unit: '°',
+      days: ['Ons','Tor','Fre','Lör','Sön','Mån','Tis'],
+      values: [2, 0, -2, -4, -6, -2, 1],
+      // for negative temps, bar goes down — we'll show absolute height + color
+      stats: [
+        { label:'Veckans min', val:'−8°C', color:'#0057A8' },
+        { label:'Veckans max', val:'+3°C', color:'#C94A2B' },
+        { label:'Medel v.10',  val:'−1,4°C', color:'#1A2025' }
+      ],
+      note: 'Blå = minusgrader, orange = plusgrader. Frostgräns vid 0°C.'
+    },
+    wind: {
+      title: 'Vindstyrka', subtitle: 'Medelvind per dag (m/s)',
+      current: '8 m/s', currentSub: 'Idag ons 6 mar · byar 14 m/s · riktning SV',
+      color: '#007A6E', unit: '',
+      days: ['Ons','Tor','Fre','Lör','Sön','Mån','Tis'],
+      values: [8, 6, 5, 4, 3, 5, 7],
+      stats: [
+        { label:'Veckans max', val:'8 m/s', color:'#007A6E' },
+        { label:'Max byvind',  val:'14 m/s', color:'#C94A2B' },
+        { label:'Medelvind',   val:'5,8 m/s', color:'#1A2025' }
+      ],
+      note: 'Byvindar över 10 m/s ökar värmebehovet med 8–12%.'
+    },
+    precip: {
+      title: 'Nederbörd', subtitle: 'Daglig nederbörd (mm)',
+      current: '3 mm', currentSub: 'Idag ons 6 mar · snöblandat',
+      color: '#0057A8', unit: '',
+      days: ['Ons','Tor','Fre','Lör','Sön','Mån','Tis'],
+      values: [3, 1, 0, 0, 0, 2, 4],
+      stats: [
+        { label:'Veckans tot.', val:'10 mm',  color:'#0057A8' },
+        { label:'Max dagsned.', val:'4 mm',   color:'#0057A8' },
+        { label:'Frostdygn',    val:'4 st',   color:'#C53030' }
+      ],
+      note: 'Snö vid minusgrader ökar risk för isbildning på kulvertar.'
+    },
+    humidity: {
+      title: 'Luftfuktighet', subtitle: 'Relativ luftfuktighet per dag (%)',
+      current: '82%', currentSub: 'Idag ons 6 mar · daggpunkt −1°C',
+      color: '#3A9E6E', unit: '',
+      days: ['Ons','Tor','Fre','Lör','Sön','Mån','Tis'],
+      values: [82, 89, 83, 81, 80, 84, 86],
+      stats: [
+        { label:'Veckans max', val:'89%',  color:'#C94A2B' },
+        { label:'Veckans min', val:'80%',  color:'#3A9E6E' },
+        { label:'Medel v.10',  val:'83,6%', color:'#1A2025' }
+      ],
+      note: 'Fuktighet över 80% vid frost ökar risk för kondensation och isbildning.'
+    },
+    solar: {
+      title: 'Solinstrålning', subtitle: 'Global solinstrålning per dag (W/m²)',
+      current: '142 W/m²', currentSub: 'Idag ons 6 mar · delvis mulet',
+      color: '#D97B10', unit: '',
+      days: ['Ons','Tor','Fre','Lör','Sön','Mån','Tis'],
+      values: [142, 85, 310, 340, 295, 110, 70],
+      stats: [
+        { label:'Veckans max',  val:'340 W/m²', color:'#D97B10' },
+        { label:'Veckans min',  val:'70 W/m²',  color:'#D97B10' },
+        { label:'Medel v.10',   val:'193 W/m²', color:'#1A2025' }
+      ],
+      note: 'Klart marsväder ger 250–380 W/m². Mulet ger 20–80 W/m².'
+    },
+    heatidx: {
+      title: 'Solreduktion', subtitle: 'Sänkning av värmebehov-index per dag',
+      current: '−3 idx', currentSub: 'Idag ons 6 mar · utan sol: 58 → med sol: 55',
+      color: '#D97B10', unit: '',
+      days: ['Ons','Tor','Fre','Lör','Sön','Mån','Tis'],
+      values: [3, 2, 7, 8, 7, 3, 1],
+      stats: [
+        { label:'Max reduktion', val:'−8 idx', color:'#D97B10' },
+        { label:'Min reduktion', val:'−1 idx', color:'#D97B10' },
+        { label:'Snitt v.10',    val:'−4,4 idx', color:'#1A2025' }
+      ],
+      note: 'Solinstrålning × 0,025 = indexreduktion. Max −12 enheter per dag.'
+    }
+  };
+
+  function openChartModal(key) {
+    const c = chartConfigs[key];
+    if (!c) return;
+    document.getElementById('chartModalTitle').textContent = c.title;
+    document.getElementById('chartModalSubtitle').textContent = c.subtitle;
+
+    const max = Math.max(...c.values, 1);
+    let bars = '';
+    c.values.forEach((v, i) => {
+      const pct = Math.round((Math.abs(v) / max) * 100);
+      const isToday = i === 0;
+      bars += `<div class="bar-col ${isToday ? 'today' : ''}">
+        <span class="bar-label-val">${v}${c.unit}</span>
+        <div class="bar-rect" style="height:${pct}%;background:${c.color};"></div>
+        <span class="bar-day">${c.days[i]}</span>
+      </div>`;
+    });
+
+    let stats = '';
+    c.stats.forEach(s => {
+      stats += `<div class="cs-cell">
+        <div class="cs-label">${s.label}</div>
+        <div class="cs-val" style="color:${s.color}">${s.val}</div>
+      </div>`;
+    });
+
+    document.getElementById('chartModalBody').innerHTML = `
+      <div class="chart-current-val" style="color:${c.color}">${c.current}</div>
+      <div class="chart-current-sub">${c.currentSub}</div>
+      <div class="bar-chart">${bars}</div>
+      <div style="font-size:10px;color:var(--muted);text-align:right;margin-bottom:4px;">▮ Idag &nbsp; ▯ Prognos</div>
+      <div class="chart-divider"></div>
+      <div class="chart-stats">${stats}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:14px;padding:10px 12px;background:var(--teal-light);border-radius:8px;">💡 ${c.note}</div>`;
+
+    document.getElementById('chartModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeChartModal() {
+    document.getElementById('chartModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeChartOnOverlay(e) {
+    if (e.target === document.getElementById('chartModal')) closeChartModal();
+  }
+
+  /* ── day modal ── */
+  /* temp, feels, wind m/s, solar W/m², humidity %, heatIdx 0-100, solRed */
+  const dayData = {
+    wed: {
+      title: 'Onsdag 6 mars 2026',
+      peak: 55,
+      summary: { tempRange:'0° – +3°', windAvg:'8 m/s', solarAvg:'142 W/m²', heatIdx:55 },
+      hours: [
+        { t:'00:00', temp:'+1', feels:'−2', wind:'8', solar:0,   hum:84, idx:60, sr:0,  night:true  },
+        { t:'01:00', temp:'+1', feels:'−2', wind:'8', solar:0,   hum:85, idx:61, sr:0,  night:true  },
+        { t:'02:00', temp:'+0', feels:'−3', wind:'9', solar:0,   hum:86, idx:63, sr:0,  night:true  },
+        { t:'03:00', temp:'+0', feels:'−3', wind:'9', solar:0,   hum:86, idx:63, sr:0,  night:true  },
+        { t:'04:00', temp:'+0', feels:'−3', wind:'9', solar:0,   hum:87, idx:63, sr:0,  night:true  },
+        { t:'05:00', temp:'+0', feels:'−3', wind:'9', solar:0,   hum:87, idx:64, sr:0,  night:true  },
+        { t:'06:00', temp:'+1', feels:'−2', wind:'8', solar:5,   hum:85, idx:62, sr:0              },
+        { t:'07:00', temp:'+1', feels:'−2', wind:'8', solar:40,  hum:84, idx:61, sr:1              },
+        { t:'08:00', temp:'+2', feels:'−1', wind:'8', solar:110, hum:83, idx:58, sr:2              },
+        { t:'09:00', temp:'+2', feels:'−1', wind:'9', solar:165, hum:82, idx:57, sr:3              },
+        { t:'10:00', temp:'+3', feels:'0',  wind:'9', solar:200, hum:81, idx:54, sr:4, peak:true   },
+        { t:'11:00', temp:'+3', feels:'0',  wind:'10',solar:220, hum:80, idx:53, sr:5, peak:true   },
+        { t:'12:00', temp:'+3', feels:'0',  wind:'11',solar:210, hum:80, idx:52, sr:5, peak:true   },
+        { t:'13:00', temp:'+3', feels:'0',  wind:'12',solar:185, hum:81, idx:53, sr:4, peak:true   },
+        { t:'14:00', temp:'+2', feels:'−1', wind:'12',solar:145, hum:82, idx:56, sr:3              },
+        { t:'15:00', temp:'+2', feels:'−1', wind:'11',solar:90,  hum:82, idx:57, sr:2              },
+        { t:'16:00', temp:'+1', feels:'−2', wind:'10',solar:30,  hum:83, idx:60, sr:1              },
+        { t:'17:00', temp:'+1', feels:'−2', wind:'9', solar:5,   hum:84, idx:61, sr:0              },
+        { t:'18:00', temp:'+1', feels:'−2', wind:'9', solar:0,   hum:85, idx:62, sr:0              },
+        { t:'19:00', temp:'+0', feels:'−3', wind:'8', solar:0,   hum:85, idx:63, sr:0              },
+        { t:'20:00', temp:'+0', feels:'−3', wind:'8', solar:0,   hum:86, idx:63, sr:0              },
+        { t:'21:00', temp:'+0', feels:'−3', wind:'8', solar:0,   hum:86, idx:63, sr:0              },
+        { t:'22:00', temp:'+0', feels:'−3', wind:'8', solar:0,   hum:86, idx:63, sr:0              },
+        { t:'23:00', temp:'+0', feels:'−3', wind:'8', solar:0,   hum:87, idx:64, sr:0              },
+      ]
+    },
+    thu: {
+      title: 'Torsdag 7 mars 2026',
+      summary: { tempRange:'−2° – +1°', windAvg:'6 m/s', solarAvg:'85 W/m²', heatIdx:65 },
+      hours: [
+        { t:'00:00', temp:'+0', feels:'−3', wind:'6', solar:0,   hum:88, idx:65, sr:0, night:true },
+        { t:'01:00', temp:'+0', feels:'−3', wind:'6', solar:0,   hum:88, idx:65, sr:0, night:true },
+        { t:'02:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:89, idx:67, sr:0, night:true },
+        { t:'03:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:89, idx:67, sr:0, night:true },
+        { t:'04:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:89, idx:67, sr:0, night:true },
+        { t:'05:00', temp:'−2', feels:'−5', wind:'6', solar:0,   hum:90, idx:69, sr:0, night:true },
+        { t:'06:00', temp:'−1', feels:'−4', wind:'6', solar:3,   hum:89, idx:67, sr:0 },
+        { t:'07:00', temp:'+0', feels:'−3', wind:'6', solar:25,  hum:88, idx:65, sr:1 },
+        { t:'08:00', temp:'+0', feels:'−3', wind:'6', solar:60,  hum:87, idx:64, sr:1 },
+        { t:'09:00', temp:'+1', feels:'−2', wind:'7', solar:90,  hum:86, idx:63, sr:2 },
+        { t:'10:00', temp:'+1', feels:'−2', wind:'7', solar:110, hum:86, idx:62, sr:2, peak:true },
+        { t:'11:00', temp:'+1', feels:'−2', wind:'8', solar:120, hum:85, idx:62, sr:3, peak:true },
+        { t:'12:00', temp:'+1', feels:'−2', wind:'8', solar:115, hum:85, idx:62, sr:3, peak:true },
+        { t:'13:00', temp:'+1', feels:'−2', wind:'8', solar:95,  hum:86, idx:63, sr:2, peak:true },
+        { t:'14:00', temp:'+0', feels:'−3', wind:'7', solar:60,  hum:87, idx:65, sr:1 },
+        { t:'15:00', temp:'+0', feels:'−3', wind:'7', solar:20,  hum:87, idx:65, sr:0 },
+        { t:'16:00', temp:'−1', feels:'−4', wind:'6', solar:2,   hum:88, idx:67, sr:0 },
+        { t:'17:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:88, idx:67, sr:0 },
+        { t:'18:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:89, idx:67, sr:0 },
+        { t:'19:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:89, idx:68, sr:0 },
+        { t:'20:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:89, idx:69, sr:0 },
+        { t:'21:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:90, idx:69, sr:0 },
+        { t:'22:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:90, idx:69, sr:0 },
+        { t:'23:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:90, idx:70, sr:0 },
+      ]
+    },
+    fri: {
+      title: 'Fredag 8 mars 2026',
+      summary: { tempRange:'−4° – −1°', windAvg:'5 m/s', solarAvg:'310 W/m²', heatIdx:65 },
+      hours: [
+        { t:'00:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:82, idx:70, sr:0, night:true },
+        { t:'01:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:82, idx:70, sr:0, night:true },
+        { t:'02:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:83, idx:72, sr:0, night:true },
+        { t:'03:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:83, idx:72, sr:0, night:true },
+        { t:'04:00', temp:'−4', feels:'−7', wind:'5', solar:0,   hum:83, idx:74, sr:0, night:true },
+        { t:'05:00', temp:'−4', feels:'−7', wind:'5', solar:0,   hum:84, idx:75, sr:0, night:true },
+        { t:'06:00', temp:'−3', feels:'−6', wind:'5', solar:20,  hum:83, idx:72, sr:0 },
+        { t:'07:00', temp:'−2', feels:'−5', wind:'5', solar:90,  hum:82, idx:70, sr:2 },
+        { t:'08:00', temp:'−1', feels:'−4', wind:'5', solar:200, hum:81, idx:67, sr:5 },
+        { t:'09:00', temp:'−1', feels:'−4', wind:'5', solar:295, hum:80, idx:65, sr:7, peak:true },
+        { t:'10:00', temp:'−1', feels:'−4', wind:'5', solar:360, hum:79, idx:62, sr:9, peak:true },
+        { t:'11:00', temp:'−1', feels:'−4', wind:'5', solar:390, hum:79, idx:61, sr:10,peak:true },
+        { t:'12:00', temp:'−1', feels:'−4', wind:'5', solar:375, hum:79, idx:61, sr:9, peak:true },
+        { t:'13:00', temp:'−1', feels:'−4', wind:'5', solar:330, hum:80, idx:63, sr:8, peak:true },
+        { t:'14:00', temp:'−2', feels:'−5', wind:'5', solar:240, hum:81, idx:66, sr:6 },
+        { t:'15:00', temp:'−2', feels:'−5', wind:'5', solar:130, hum:81, idx:68, sr:3 },
+        { t:'16:00', temp:'−3', feels:'−6', wind:'5', solar:40,  hum:82, idx:71, sr:1 },
+        { t:'17:00', temp:'−3', feels:'−6', wind:'5', solar:5,   hum:83, idx:72, sr:0 },
+        { t:'18:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:83, idx:72, sr:0 },
+        { t:'19:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:83, idx:73, sr:0 },
+        { t:'20:00', temp:'−4', feels:'−7', wind:'5', solar:0,   hum:84, idx:74, sr:0 },
+        { t:'21:00', temp:'−4', feels:'−7', wind:'5', solar:0,   hum:84, idx:75, sr:0 },
+        { t:'22:00', temp:'−4', feels:'−7', wind:'4', solar:0,   hum:84, idx:74, sr:0 },
+        { t:'23:00', temp:'−4', feels:'−7', wind:'4', solar:0,   hum:84, idx:75, sr:0 },
+      ]
+    },
+    sat: {
+      title: 'Lördag 9 mars 2026 ❄',
+      summary: { tempRange:'−6° – −3°', windAvg:'4 m/s', solarAvg:'340 W/m²', heatIdx:77 },
+      hours: [
+        { t:'00:00', temp:'−4', feels:'−7', wind:'4', solar:0,   hum:80, idx:78, sr:0, night:true },
+        { t:'01:00', temp:'−5', feels:'−8', wind:'4', solar:0,   hum:81, idx:80, sr:0, night:true },
+        { t:'02:00', temp:'−5', feels:'−8', wind:'4', solar:0,   hum:81, idx:80, sr:0, night:true },
+        { t:'03:00', temp:'−6', feels:'−9', wind:'4', solar:0,   hum:82, idx:82, sr:0, night:true },
+        { t:'04:00', temp:'−6', feels:'−9', wind:'4', solar:0,   hum:82, idx:83, sr:0, night:true, peak:true },
+        { t:'05:00', temp:'−6', feels:'−9', wind:'4', solar:0,   hum:82, idx:83, sr:0, night:true, peak:true },
+        { t:'06:00', temp:'−5', feels:'−8', wind:'4', solar:25,  hum:81, idx:80, sr:1 },
+        { t:'07:00', temp:'−5', feels:'−8', wind:'4', solar:100, hum:80, idx:79, sr:2 },
+        { t:'08:00', temp:'−4', feels:'−7', wind:'4', solar:230, hum:79, idx:76, sr:6 },
+        { t:'09:00', temp:'−3', feels:'−6', wind:'4', solar:340, hum:78, idx:73, sr:8, peak:true },
+        { t:'10:00', temp:'−3', feels:'−6', wind:'4', solar:410, hum:78, idx:72, sr:10,peak:true },
+        { t:'11:00', temp:'−3', feels:'−6', wind:'4', solar:430, hum:77, idx:71, sr:11,peak:true },
+        { t:'12:00', temp:'−3', feels:'−6', wind:'4', solar:420, hum:77, idx:71, sr:10,peak:true },
+        { t:'13:00', temp:'−4', feels:'−7', wind:'4', solar:365, hum:78, idx:73, sr:9 },
+        { t:'14:00', temp:'−4', feels:'−7', wind:'4', solar:265, hum:79, idx:75, sr:7 },
+        { t:'15:00', temp:'−4', feels:'−7', wind:'4', solar:145, hum:79, idx:77, sr:4 },
+        { t:'16:00', temp:'−5', feels:'−8', wind:'4', solar:45,  hum:80, idx:79, sr:1 },
+        { t:'17:00', temp:'−5', feels:'−8', wind:'4', solar:5,   hum:80, idx:80, sr:0 },
+        { t:'18:00', temp:'−5', feels:'−8', wind:'4', solar:0,   hum:81, idx:80, sr:0 },
+        { t:'19:00', temp:'−5', feels:'−8', wind:'3', solar:0,   hum:81, idx:81, sr:0 },
+        { t:'20:00', temp:'−6', feels:'−9', wind:'3', solar:0,   hum:82, idx:82, sr:0 },
+        { t:'21:00', temp:'−6', feels:'−9', wind:'3', solar:0,   hum:82, idx:83, sr:0 },
+        { t:'22:00', temp:'−6', feels:'−9', wind:'3', solar:0,   hum:82, idx:83, sr:0 },
+        { t:'23:00', temp:'−6', feels:'−9', wind:'3', solar:0,   hum:83, idx:84, sr:0 },
+      ]
+    },
+    sun: {
+      title: 'Söndag 10 mars 2026 ❄❄',
+      summary: { tempRange:'−8° – −4°', windAvg:'3 m/s', solarAvg:'295 W/m²', heatIdx:88 },
+      hours: [
+        { t:'00:00', temp:'−6', feels:'−8', wind:'3', solar:0,   hum:80, idx:85, sr:0, night:true, peak:true },
+        { t:'01:00', temp:'−7', feels:'−9', wind:'3', solar:0,   hum:81, idx:87, sr:0, night:true, peak:true },
+        { t:'02:00', temp:'−7', feels:'−9', wind:'3', solar:0,   hum:81, idx:87, sr:0, night:true, peak:true },
+        { t:'03:00', temp:'−8', feels:'−10',wind:'3', solar:0,   hum:82, idx:89, sr:0, night:true, peak:true },
+        { t:'04:00', temp:'−8', feels:'−10',wind:'3', solar:0,   hum:82, idx:90, sr:0, night:true, peak:true },
+        { t:'05:00', temp:'−8', feels:'−10',wind:'3', solar:0,   hum:82, idx:90, sr:0, night:true, peak:true },
+        { t:'06:00', temp:'−7', feels:'−9', wind:'3', solar:20,  hum:81, idx:87, sr:1 },
+        { t:'07:00', temp:'−6', feels:'−8', wind:'3', solar:95,  hum:80, idx:85, sr:2 },
+        { t:'08:00', temp:'−5', feels:'−7', wind:'3', solar:215, hum:79, idx:82, sr:5 },
+        { t:'09:00', temp:'−4', feels:'−6', wind:'3', solar:315, hum:78, idx:79, sr:8, peak:true },
+        { t:'10:00', temp:'−4', feels:'−6', wind:'3', solar:380, hum:77, idx:77, sr:9, peak:true },
+        { t:'11:00', temp:'−4', feels:'−6', wind:'3', solar:400, hum:77, idx:76, sr:10,peak:true },
+        { t:'12:00', temp:'−4', feels:'−6', wind:'3', solar:385, hum:77, idx:77, sr:10,peak:true },
+        { t:'13:00', temp:'−4', feels:'−6', wind:'3', solar:330, hum:78, idx:78, sr:8, peak:true },
+        { t:'14:00', temp:'−5', feels:'−7', wind:'3', solar:230, hum:78, idx:81, sr:6 },
+        { t:'15:00', temp:'−5', feels:'−7', wind:'3', solar:120, hum:79, idx:83, sr:3 },
+        { t:'16:00', temp:'−6', feels:'−8', wind:'3', solar:35,  hum:80, idx:85, sr:1 },
+        { t:'17:00', temp:'−6', feels:'−8', wind:'3', solar:3,   hum:80, idx:86, sr:0 },
+        { t:'18:00', temp:'−7', feels:'−9', wind:'3', solar:0,   hum:81, idx:87, sr:0 },
+        { t:'19:00', temp:'−7', feels:'−9', wind:'3', solar:0,   hum:81, idx:88, sr:0 },
+        { t:'20:00', temp:'−7', feels:'−9', wind:'3', solar:0,   hum:82, idx:88, sr:0 },
+        { t:'21:00', temp:'−7', feels:'−9', wind:'3', solar:0,   hum:82, idx:88, sr:0 },
+        { t:'22:00', temp:'−7', feels:'−9', wind:'3', solar:0,   hum:82, idx:88, sr:0 },
+        { t:'23:00', temp:'−7', feels:'−9', wind:'3', solar:0,   hum:82, idx:89, sr:0 },
+      ]
+    },
+    mon: {
+      title: 'Måndag 11 mars 2026',
+      summary: { tempRange:'−3° – −1°', windAvg:'5 m/s', solarAvg:'110 W/m²', heatIdx:75 },
+      hours: [
+        { t:'00:00', temp:'−6', feels:'−9', wind:'4', solar:0,   hum:82, idx:84, sr:0, night:true },
+        { t:'01:00', temp:'−5', feels:'−8', wind:'4', solar:0,   hum:82, idx:82, sr:0, night:true },
+        { t:'02:00', temp:'−4', feels:'−7', wind:'5', solar:0,   hum:83, idx:80, sr:0, night:true },
+        { t:'03:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:83, idx:78, sr:0, night:true },
+        { t:'04:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:83, idx:77, sr:0, night:true },
+        { t:'05:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:84, idx:77, sr:0, night:true },
+        { t:'06:00', temp:'−2', feels:'−5', wind:'5', solar:5,   hum:83, idx:75, sr:0 },
+        { t:'07:00', temp:'−2', feels:'−5', wind:'5', solar:30,  hum:83, idx:75, sr:1 },
+        { t:'08:00', temp:'−1', feels:'−4', wind:'5', solar:70,  hum:82, idx:73, sr:2 },
+        { t:'09:00', temp:'−1', feels:'−4', wind:'5', solar:115, hum:82, idx:72, sr:3 },
+        { t:'10:00', temp:'−1', feels:'−4', wind:'5', solar:140, hum:82, idx:71, sr:3, peak:true },
+        { t:'11:00', temp:'−1', feels:'−4', wind:'6', solar:150, hum:81, idx:71, sr:4, peak:true },
+        { t:'12:00', temp:'−1', feels:'−4', wind:'6', solar:140, hum:81, idx:72, sr:3, peak:true },
+        { t:'13:00', temp:'−1', feels:'−4', wind:'6', solar:110, hum:82, idx:73, sr:3, peak:true },
+        { t:'14:00', temp:'−2', feels:'−5', wind:'5', solar:65,  hum:83, idx:75, sr:2 },
+        { t:'15:00', temp:'−2', feels:'−5', wind:'5', solar:25,  hum:83, idx:75, sr:1 },
+        { t:'16:00', temp:'−2', feels:'−5', wind:'5', solar:3,   hum:84, idx:76, sr:0 },
+        { t:'17:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:84, idx:77, sr:0 },
+        { t:'18:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:84, idx:77, sr:0 },
+        { t:'19:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:85, idx:78, sr:0 },
+        { t:'20:00', temp:'−3', feels:'−6', wind:'5', solar:0,   hum:85, idx:78, sr:0 },
+        { t:'21:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:85, idx:76, sr:0 },
+        { t:'22:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:85, idx:76, sr:0 },
+        { t:'23:00', temp:'−2', feels:'−5', wind:'5', solar:0,   hum:85, idx:76, sr:0 },
+      ]
+    },
+    tue: {
+      title: 'Tisdag 12 mars 2026',
+      summary: { tempRange:'−1° – +2°', windAvg:'7 m/s', solarAvg:'70 W/m²', heatIdx:61 },
+      hours: [
+        { t:'00:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:84, idx:68, sr:0, night:true },
+        { t:'01:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:85, idx:68, sr:0, night:true },
+        { t:'02:00', temp:'−1', feels:'−4', wind:'6', solar:0,   hum:85, idx:68, sr:0, night:true },
+        { t:'03:00', temp:'−1', feels:'−4', wind:'7', solar:0,   hum:85, idx:69, sr:0, night:true },
+        { t:'04:00', temp:'−1', feels:'−4', wind:'7', solar:0,   hum:85, idx:69, sr:0, night:true },
+        { t:'05:00', temp:'−1', feels:'−4', wind:'7', solar:0,   hum:86, idx:69, sr:0, night:true },
+        { t:'06:00', temp:'+0', feels:'−3', wind:'7', solar:3,   hum:85, idx:67, sr:0 },
+        { t:'07:00', temp:'+0', feels:'−3', wind:'7', solar:15,  hum:85, idx:67, sr:0 },
+        { t:'08:00', temp:'+1', feels:'−2', wind:'7', solar:45,  hum:84, idx:64, sr:1 },
+        { t:'09:00', temp:'+1', feels:'−2', wind:'8', solar:75,  hum:83, idx:63, sr:2 },
+        { t:'10:00', temp:'+1', feels:'−2', wind:'8', solar:90,  hum:83, idx:63, sr:2, peak:true },
+        { t:'11:00', temp:'+2', feels:'−1', wind:'9', solar:95,  hum:82, idx:61, sr:2, peak:true },
+        { t:'12:00', temp:'+2', feels:'−1', wind:'9', solar:90,  hum:82, idx:61, sr:2, peak:true },
+        { t:'13:00', temp:'+2', feels:'−1', wind:'10',solar:80,  hum:82, idx:62, sr:2, peak:true },
+        { t:'14:00', temp:'+1', feels:'−2', wind:'10',solar:55,  hum:83, idx:63, sr:1 },
+        { t:'15:00', temp:'+1', feels:'−2', wind:'10',solar:25,  hum:84, idx:64, sr:1 },
+        { t:'16:00', temp:'+0', feels:'−3', wind:'9', solar:5,   hum:85, idx:66, sr:0 },
+        { t:'17:00', temp:'+0', feels:'−3', wind:'9', solar:0,   hum:85, idx:67, sr:0 },
+        { t:'18:00', temp:'+0', feels:'−3', wind:'8', solar:0,   hum:86, idx:67, sr:0 },
+        { t:'19:00', temp:'+0', feels:'−3', wind:'8', solar:0,   hum:86, idx:67, sr:0 },
+        { t:'20:00', temp:'+0', feels:'−3', wind:'7', solar:0,   hum:86, idx:67, sr:0 },
+        { t:'21:00', temp:'+0', feels:'−3', wind:'7', solar:0,   hum:86, idx:67, sr:0 },
+        { t:'22:00', temp:'+0', feels:'−3', wind:'7', solar:0,   hum:87, idx:68, sr:0 },
+        { t:'23:00', temp:'+0', feels:'−3', wind:'7', solar:0,   hum:87, idx:68, sr:0 },
+      ]
+    }
+  };
+
+  function tempClass(t) {
+    const n = parseFloat(t);
+    if (n <= -3) return 'ht-frost';
+    if (n < 0)  return 'ht-cold';
+    return 'ht-mild';
+  }
+
+  function solarColor(w) {
+    if (w === 0) return '#CCC';
+    if (w < 100) return '#E8A030';
+    if (w < 250) return '#D97B10';
+    return '#C05A00';
+  }
+
+  function openDayModal(key) {
+    const d = dayData[key];
+    if (!d) return;
+    document.getElementById('dayModalTitle').textContent = d.title;
+
+    // summary strip
+    const s = d.summary;
+    document.getElementById('daySummaryStrip').innerHTML = `
+      <div class="dss-cell"><div class="dss-label">Temp</div><div class="dss-val">${s.tempRange}</div></div>
+      <div class="dss-cell"><div class="dss-label">Medelvind</div><div class="dss-val">${s.windAvg}</div></div>
+      <div class="dss-cell"><div class="dss-label">☀️ Medelinstr.</div><div class="dss-val" style="color:var(--solar)">${s.solarAvg}</div></div>
+      <div class="dss-cell"><div class="dss-label">Värmeidx</div><div class="dss-val">${s.heatIdx}</div></div>`;
+
+    // hourly rows
+    let rows = '';
+    d.hours.forEach(h => {
+      const cls = h.peak && h.night ? 'night-row' : h.night ? 'night-row' : h.peak ? 'peak-row' : '';
+      const nightTag = h.night ? '<span class="night-label">Natt</span>' : '';
+      const peakTag  = h.peak && !h.night ? '<span class="peak-label">Topp</span>' : '';
+      const sW = Math.min(100, h.idx);
+      const sC = solarColor(h.solar);
+      rows += `<tr class="${cls}">
+        <td><span class="time-label">${h.t}</span>${nightTag}${peakTag}</td>
+        <td><span class="hour-temp ${tempClass(h.temp)}">${h.temp}°</span></td>
+        <td><span style="color:var(--muted);font-size:12px">${h.feels}°</span></td>
+        <td>${h.wind}</td>
+        <td><span class="solar-dot" style="background:${sC}"></span>${h.solar > 0 ? h.solar : '—'}</td>
+        <td>${h.hum}%</td>
+        <td>
+          <div class="hbar-sm">
+            <div class="htrack-sm"><div class="hfill-sm" style="width:${sW}%"></div></div>
+            <span style="font-size:11px;color:var(--muted);width:26px">${sW}</span>
+            ${h.sr > 0 ? `<span style="font-size:10px;color:var(--solar)">−${h.sr}☀</span>` : ''}
+          </div>
+        </td>
+      </tr>`;
+    });
+    document.getElementById('hourTableBody').innerHTML = rows;
+    document.getElementById('dayModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDayModal() {
+    document.getElementById('dayModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOnOverlayDay(e) {
+    if (e.target === document.getElementById('dayModal')) closeDayModal();
+  }
+
+  /* ── week modal ── */
+  const weekData = {
+    v10: {
+      title: 'Vecka 10 — Prognos', period: '3–9 mars 2026', idx: 78,
+      idxBreakdown: { temp: 83, wind: 5, solar: -10 },
+      days: [
+        { name:'Ons', date:'6 mar', hi:'+3°', lo:'0°',   hiClass:'fc-hi', loClass:'fc-lo',    cond:'Snöblandat', wind:'8/14 m/s SV', precip:'3 mm', solar:'142 W/m²', hdd:15, idx:55, solRed:3 },
+        { name:'Tor', date:'7 mar', hi:'+1°', lo:'−2°',  hiClass:'fc-hi', loClass:'fc-lo',    cond:'Mulet',      wind:'6/10 m/s N',  precip:'1 mm', solar:'85 W/m²',  hdd:17, idx:65, solRed:2 },
+        { name:'Fre', date:'8 mar', hi:'−1°', lo:'−4°',  hiClass:'fc-lo', loClass:'fc-frost', cond:'Klart',      wind:'5/9 m/s NO',  precip:'0 mm', solar:'310 W/m²', hdd:19, idx:65, solRed:7 },
+        { name:'Lör', date:'9 mar', hi:'−3°', lo:'−6°',  hiClass:'fc-frost',loClass:'fc-frost',cond:'❄ Frost',  wind:'4/7 m/s NO',  precip:'0 mm', solar:'340 W/m²', hdd:21, idx:77, solRed:8 },
+        { name:'Sön', date:'10 mar',hi:'−4°', lo:'−8°',  hiClass:'fc-frost',loClass:'fc-frost',cond:'❄ Stark frost',wind:'3/6 m/s O',precip:'0 mm',solar:'295 W/m²', hdd:23, idx:88, solRed:7 },
+        { name:'Mån', date:'11 mar',hi:'−1°', lo:'−3°',  hiClass:'fc-lo', loClass:'fc-frost', cond:'Snö',        wind:'5/8 m/s SV',  precip:'2 mm', solar:'110 W/m²', hdd:19, idx:75, solRed:3 },
+        { name:'Tis', date:'12 mar',hi:'+2°', lo:'−1°',  hiClass:'fc-hi', loClass:'fc-lo',    cond:'Snöblandat', wind:'7/12 m/s V',  precip:'4 mm', solar:'70 W/m²',  hdd:16, idx:61, solRed:1 },
+      ]
+    },
+    v9:  { title:'Vecka 9', period:'24 feb – 2 mars 2026', idx:64, idxBreakdown:{temp:62,wind:5,solar:-3}, days:[
+      {name:'Mån',date:'24 feb',hi:'+5°',lo:'0°',  hiClass:'fc-hi',loClass:'fc-lo',   cond:'Mulet',     wind:'5/9 m/s SV', precip:'2 mm',solar:'155 W/m²',hdd:13,idx:52,solRed:3},
+      {name:'Tis',date:'25 feb',hi:'+4°',lo:'+1°', hiClass:'fc-hi',loClass:'fc-hi',   cond:'Regn',      wind:'7/12 m/s V', precip:'4 mm',solar:'90 W/m²', hdd:14,idx:58,solRed:2},
+      {name:'Ons',date:'26 feb',hi:'+3°',lo:'+0°', hiClass:'fc-hi',loClass:'fc-lo',   cond:'Mulet',     wind:'6/10 m/s SV',precip:'1 mm',solar:'110 W/m²',hdd:15,idx:60,solRed:2},
+      {name:'Tor',date:'27 feb',hi:'+6°',lo:'+2°', hiClass:'fc-hi',loClass:'fc-hi',   cond:'Klart',     wind:'4/7 m/s V',  precip:'0 mm',solar:'240 W/m²',hdd:12,idx:54,solRed:6},
+      {name:'Fre',date:'28 feb',hi:'+4°',lo:'+0°', hiClass:'fc-hi',loClass:'fc-lo',   cond:'Halvklart', wind:'5/8 m/s SV', precip:'1 mm',solar:'180 W/m²',hdd:14,idx:58,solRed:4},
+      {name:'Lör',date:'1 mar', hi:'+2°',lo:'−1°', hiClass:'fc-hi',loClass:'fc-lo',   cond:'Mulet',     wind:'4/6 m/s N',  precip:'0 mm',solar:'120 W/m²',hdd:16,idx:65,solRed:3},
+      {name:'Sön',date:'2 mar', hi:'+1°',lo:'−2°', hiClass:'fc-hi',loClass:'fc-lo',   cond:'Snöblandat',wind:'5/9 m/s NO', precip:'2 mm',solar:'95 W/m²', hdd:17,idx:67,solRed:2},
+    ]},
+    v8:  { title:'Vecka 8', period:'17–23 februari 2026', idx:52, idxBreakdown:{temp:48,wind:6,solar:-2}, days:[
+      {name:'Mån',date:'17 feb',hi:'+6°',lo:'+2°', hiClass:'fc-hi',loClass:'fc-hi',cond:'Klart',     wind:'4/6 m/s SV', precip:'0 mm',solar:'165 W/m²',hdd:12,idx:46,solRed:4},
+      {name:'Tis',date:'18 feb',hi:'+7°',lo:'+3°', hiClass:'fc-hi',loClass:'fc-hi',cond:'Halvklart', wind:'5/8 m/s V',  precip:'0 mm',solar:'155 W/m²',hdd:11,idx:44,solRed:4},
+      {name:'Ons',date:'19 feb',hi:'+5°',lo:'+1°', hiClass:'fc-hi',loClass:'fc-hi',cond:'Mulet',     wind:'7/12 m/s SV',precip:'3 mm',solar:'80 W/m²', hdd:13,idx:55,solRed:2},
+      {name:'Tor',date:'20 feb',hi:'+4°',lo:'+0°', hiClass:'fc-hi',loClass:'fc-lo',cond:'Regn',      wind:'8/14 m/s V', precip:'5 mm',solar:'60 W/m²', hdd:14,idx:60,solRed:1},
+      {name:'Fre',date:'21 feb',hi:'+8°',lo:'+3°', hiClass:'fc-hi',loClass:'fc-hi',cond:'Klart',     wind:'5/9 m/s SV', precip:'0 mm',solar:'190 W/m²',hdd:10,idx:42,solRed:5},
+      {name:'Lör',date:'22 feb',hi:'+6°',lo:'+2°', hiClass:'fc-hi',loClass:'fc-hi',cond:'Halvklart', wind:'4/7 m/s V',  precip:'0 mm',solar:'175 W/m²',hdd:12,idx:48,solRed:4},
+      {name:'Sön',date:'23 feb',hi:'+5°',lo:'+1°', hiClass:'fc-hi',loClass:'fc-hi',cond:'Mulet',     wind:'6/10 m/s SV',precip:'6 mm',solar:'95 W/m²', hdd:13,idx:54,solRed:2},
+    ]},
+    v7:  { title:'Vecka 7', period:'10–16 februari 2026', idx:71, idxBreakdown:{temp:70,wind:3,solar:-2}, days:[
+      {name:'Mån',date:'10 feb',hi:'+2°',lo:'−2°', hiClass:'fc-hi',loClass:'fc-lo',   cond:'Mulet',     wind:'3/5 m/s N',  precip:'1 mm',solar:'100 W/m²',hdd:17,idx:68,solRed:2},
+      {name:'Tis',date:'11 feb',hi:'+4°',lo:'0°',  hiClass:'fc-hi',loClass:'fc-lo',   cond:'Halvklart', wind:'4/7 m/s SV', precip:'0 mm',solar:'140 W/m²',hdd:14,idx:58,solRed:3},
+      {name:'Ons',date:'12 feb',hi:'−1°',lo:'−4°', hiClass:'fc-lo',loClass:'fc-frost',cond:'Klart',     wind:'3/5 m/s NO', precip:'0 mm',solar:'160 W/m²',hdd:19,idx:72,solRed:4},
+      {name:'Tor',date:'13 feb',hi:'−2°',lo:'−5°', hiClass:'fc-lo',loClass:'fc-frost',cond:'❄ Frost',  wind:'4/6 m/s N',  precip:'0 mm',solar:'145 W/m²',hdd:21,idx:78,solRed:3},
+      {name:'Fre',date:'14 feb',hi:'0°', lo:'−3°', hiClass:'fc-lo',loClass:'fc-frost',cond:'Klart',     wind:'3/5 m/s NO', precip:'0 mm',solar:'155 W/m²',hdd:18,idx:70,solRed:4},
+      {name:'Lör',date:'15 feb',hi:'+3°',lo:'+0°', hiClass:'fc-hi',loClass:'fc-lo',   cond:'Mulet',     wind:'5/8 m/s SV', precip:'3 mm',solar:'70 W/m²', hdd:15,idx:62,solRed:2},
+      {name:'Sön',date:'16 feb',hi:'+4°',lo:'+1°', hiClass:'fc-hi',loClass:'fc-hi',   cond:'Regn',      wind:'6/10 m/s V', precip:'2 mm',solar:'85 W/m²', hdd:14,idx:60,solRed:2},
+    ]}
+  };
+
+  function openWeekModal(weekKey) {
+    const w = weekData[weekKey];
+    if (!w) return;
+    document.getElementById('modalTitle').textContent = w.title;
+    document.getElementById('modalSubtitle').textContent = w.period;
+    const bd = w.idxBreakdown;
+    let html = `
+      <div class="idx-breakdown">
+        <div class="idx-breakdown-title">📊 Hur beräknas värmebehov-index?</div>
+        <div class="idx-row"><span class="il">🌡️ Temperaturkomponent (HDD)</span><span class="iv">${bd.temp}</span></div>
+        <div class="idx-row"><span class="il">💨 Vindtillägg</span><span class="iv" style="color:var(--frost)">+${bd.wind}</span></div>
+        <div class="idx-row"><span class="il">☀️ Solreduktion</span><span class="iv" style="color:var(--solar)">${bd.solar}</span></div>
+        <div class="idx-total"><span>Totalt index</span><span class="idx-total-num">${w.idx}</span></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;display:flex;align-items:center;gap:8px;">Daglig detaljvy <span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></div>`;
+    w.days.forEach(d => {
+      const solW = Math.min(100, d.idx);
+      html += `
+        <div class="modal-day">
+          <div class="modal-day-top">
+            <span class="modal-day-name">${d.name}</span>
+            <span class="modal-day-date">${d.date}</span>
+            <div class="modal-day-temps">
+              <span class="${d.hiClass}">${d.hi}</span>
+              <span style="color:var(--border)">|</span>
+              <span class="${d.loClass}">${d.lo}</span>
+            </div>
+            <span class="badge b-cloud" style="font-size:11px">${d.cond}</span>
+          </div>
+          <div class="modal-day-grid">
+            <div class="mdg-cell"><div class="mdg-label">Vind</div><div class="mdg-val">${d.wind}</div></div>
+            <div class="mdg-cell"><div class="mdg-label">Nederbörd</div><div class="mdg-val">${d.precip}</div></div>
+            <div class="mdg-cell"><div class="mdg-label">☀️ Sol</div><div class="mdg-val" style="color:var(--solar)">${d.solar}</div></div>
+            <div class="mdg-cell"><div class="mdg-label">HDD</div><div class="mdg-val">${d.hdd}</div></div>
+            <div class="mdg-cell"><div class="mdg-label">Solreduktion</div><div class="mdg-val" style="color:var(--solar)">−${d.solRed} idx</div></div>
+            <div class="mdg-cell"><div class="mdg-label">Värmebehov</div>
+              <div class="hbar" style="margin-top:4px">
+                <div class="htrack"><div class="hfill" style="width:${solW}%"></div><div style="height:100%;background:#F5D9A8;width:${d.solRed}%;display:inline-block;"></div></div>
+                <span class="hpct">${solW}%</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    });
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('weekModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('weekModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOnOverlay(e) {
+    if (e.target === document.getElementById('weekModal')) closeModal();
+  }
+
+  function toggleInfo(id) {
+    const box = document.getElementById(id);
+    const btn = box.previousElementSibling;
+    const isOpen = box.classList.contains('open');
+    box.classList.toggle('open', !isOpen);
+    if (btn && btn.classList.contains('info-btn')) btn.classList.toggle('active', !isOpen);
+  }
+
+  function toggleGlossary(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+  }
+
+  /* ── LIVE DATA LOADER ────────────────────────────────────────────────
+   * Fetches weather_data.json (written by collect_smhi.py).
+   * When found, updates the page with real values.
+   * Falls back gracefully to the static example data if not found.
+   * ─────────────────────────────────────────────────────────────────── */
+
+  function fmtTemp(v) {
+    if (v == null) return '—';
+    const n = parseFloat(v);
+    return (n >= 0 ? '+' : '') + n.toFixed(1) + '°';
+  }
+  function fmtNum(v, decimals = 1) {
+    return v == null ? '—' : parseFloat(v).toFixed(decimals);
+  }
+  function smhiSymbolLabel(sym) {
+    const map = {1:'Klart',2:'Nästan klart',3:'Halvklart',4:'Halvklart',5:'Mulet',6:'Mulet',
+      7:'Dimma',8:'Lätt regnskur',9:'Regnskur',10:'Kraftig regnskur',
+      11:'Åska',12:'Lätt snöblandad',13:'Snöblandad',14:'Kraftig snöblandad',
+      15:'Lätt snöby',16:'Snöby',17:'Kraftig snöby',
+      18:'Lätt regn',19:'Regn',20:'Kraftigt regn',
+      21:'Åska',22:'Lätt snöblandat regn',23:'Snöblandat regn',24:'Kraftigt snöblandat',
+      25:'Lätt snöfall',26:'Snöfall',27:'Kraftigt snöfall'};
+    return map[sym] || 'Okänt';
+  }
+  function isoToSwedishDay(dateStr) {
+    const days = ['Sön','Mån','Tis','Ons','Tor','Fre','Lör'];
+    return days[new Date(dateStr + 'T12:00:00').getDay()];
+  }
+  function isoToShortDate(dateStr) {
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.getDate() + ' ' + ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'][d.getMonth()];
+  }
+
+  // ── ALERT BANNER LOGIC ───────────────────────────────────────────────────────
+  // Priority order (highest first):
+  //   1. SEVERE     — extreme frost (≤ −8°C) in next 3 days
+  //   2. STORM+FROST— storm (≥ 18 m/s) AND frost combined
+  //   3. FROST      — frost (< 0°C) in next 3 days
+  //   4. STORM      — storm (≥ 18 m/s) in next 3 days
+  //   5. WIND       — strong wind (≥ 12 m/s) in next 3 days
+  //   6. MILD       — warming trend (avg next 3 days > current + 4°C)
+  //   7. NORMAL     — stable, no frost in next 7 days
+  //   8. DEFAULT    — general outlook
+  function updateAlertBanner(forecast, obs) {
+    const banner = document.getElementById('alert-banner');
+    if (!banner || !forecast || forecast.length === 0) return;
+
+    const WD = ['sön','mån','tis','ons','tor','fre','lör'];
+    const MO = ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+    function dayLabel(dateStr) {
+      const d = new Date(dateStr + 'T12:00:00Z');
+      return WD[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + MO[d.getUTCMonth()];
+    }
+    function prevDay(dateStr) {
+      const d = new Date(dateStr + 'T12:00:00Z');
+      d.setUTCDate(d.getUTCDate() - 1);
+      return WD[d.getUTCDay()];
+    }
+    function fmtT(v) { return (v >= 0 ? '+' : '−') + Math.abs(Math.round(v)) + ' °C'; }
+    function fmtW(v) { return Math.round(v) + ' m/s'; }
+
+    const next3 = forecast.slice(0, 3);
+    const next7 = forecast.slice(0, 7);
+
+    // ── Temperature checks ──
+    const severeDays = next3.filter(d => (d.temp_min ?? 0) <= -8);
+    const frostDays  = next3.filter(d => (d.temp_min ?? 0) < 0);
+    const currentTemp = obs.temp_c ?? next3[0]?.temp_mean ?? 0;
+    const avg3 = next3.reduce((s,d) => s + (d.temp_mean ?? 0), 0) / (next3.length || 1);
+    const warming = avg3 > currentTemp + 4;
+    const allMild = next7.every(d => (d.temp_min ?? 0) >= 0);
+
+    // ── Wind checks (using raw station wind, before urban factor) ──
+    // Storm: mean wind ≥ 18 m/s or max gust ≥ 25 m/s
+    // Strong wind: mean wind ≥ 12 m/s or max gust ≥ 17 m/s
+    const stormDays = next3.filter(d => (d.wind_mean ?? 0) >= 18 || (d.wind_max ?? 0) >= 25);
+    const windDays  = next3.filter(d => (d.wind_mean ?? 0) >= 12 || (d.wind_max ?? 0) >= 17);
+    const maxWind   = Math.max(...next3.map(d => d.wind_mean ?? 0));
+    const maxGust   = Math.max(...next3.map(d => d.wind_max  ?? 0));
+
+    // ── Rain checks ──
+    // Heavy rain: ≥ 20 mm/day (risk of surface flooding near culverts)
+    // Notable rain: ≥ 8 mm/day (worth mentioning)
+    // Sleet/freezing rain: frost day AND rain ≥ 5 mm (ice formation on pipes/roads)
+    const heavyRainDays = next3.filter(d => (d.precip_sum ?? 0) >= 20);
+    const rainDays      = next3.filter(d => (d.precip_sum ?? 0) >= 8);
+    const sleetDays     = next3.filter(d => (d.temp_min ?? 0) < 0 && (d.precip_sum ?? 0) >= 5);
+    const maxPrecip     = Math.max(...next3.map(d => d.precip_sum ?? 0));
+    const totalPrecip3  = next3.reduce((s,d) => s + (d.precip_sum ?? 0), 0);
+
+    let cls, icon, label, body;
+
+    if (severeDays.length > 0) {
+      // ── 1. SEVERE FROST ──
+      cls = 'alert-bar--severe';
+      icon = '🚨';
+      const names = severeDays.map(d => `${dayLabel(d.date)} (<strong>${fmtT(d.temp_min)}</strong>)`).join(' och ');
+      const prepDay = prevDay(severeDays[0].date);
+      label = `Extrem frostvarning — ${severeDays.map(d => dayLabel(d.date)).join(' & ')}`;
+      body = `Temperaturen väntas sjunka till ${names}. Höj framledningstemperaturen senast ${prepDay}kväll och kontrollera känsliga kulvertar.`;
+      // Add wind note if also stormy
+      if (stormDays.length > 0)
+        body += ` ⚠️ Storm prognostiseras samtidigt — kraftigt förhöjd nätbelastning.`;
+
+    } else if (frostDays.length > 0 && stormDays.length > 0) {
+      // ── 2. STORM + FROST combined ──
+      cls = 'alert-bar--severe';
+      icon = '🌨️';
+      const frostNames = frostDays.map(d => dayLabel(d.date)).join(' & ');
+      const windPeak = stormDays.reduce((a,b) => (b.wind_mean??0) > (a.wind_mean??0) ? b : a, stormDays[0]);
+      label = `Storm och frost — ${frostNames}`;
+      body = `Kombinerat frost och storm (<strong>${fmtW(windPeak.wind_mean ?? maxWind)}</strong> medelvind, byar upp till <strong>${fmtW(windPeak.wind_max ?? maxGust)}</strong>). ` +
+             `Kraftigt förhöjd nätbelastning — justera framledningstemperatur och beredskap.`;
+
+    } else if (sleetDays.length > 0) {
+      // ── 3. SLEET / FREEZING RAIN ──
+      cls = 'alert-bar--sleet';
+      icon = '🌧️';
+      const sleetNames = sleetDays.map(d => `${dayLabel(d.date)} (<strong>${(d.precip_sum??0).toFixed(0)} mm</strong>, min ${fmtT(d.temp_min)})`).join(' och ');
+      label = `Risk för snöblandat regn / isbildning — ${sleetDays.map(d => dayLabel(d.date)).join(' & ')}`;
+      body = `Nederbörd kombinerat med minusgrader: ${sleetNames}. Risk för isbildning på kulvertlock, ventiler och yttre komponenter — kontrollera och salta/sandning vid behov.`;
+
+    } else if (frostDays.length > 0) {
+      // ── 4. FROST ──
+      cls = 'alert-bar--frost';
+      icon = '❄️';
+      const names = frostDays.map(d => `${dayLabel(d.date)} (<strong>${fmtT(d.temp_min)}</strong>)`).join(' och ');
+      const prepDay = prevDay(frostDays[0].date);
+      const multi = frostDays.length > 1 ? `${frostDays.length} dygn med frost i prognosen. ` : '';
+      label = `Frostvarning — ${frostDays.map(d => dayLabel(d.date)).join(' & ')}`;
+      body = `Mintemperatur väntas bli ${names}. ${multi}Justera framledningstemperaturen ${prepDay}kväll.`;
+
+    } else if (stormDays.length > 0) {
+      // ── 5. STORM (no frost) ──
+      cls = 'alert-bar--storm';
+      icon = '🌬️';
+      const stormPeak = stormDays.reduce((a,b) => (b.wind_mean??0) > (a.wind_mean??0) ? b : a, stormDays[0]);
+      const stormNames = stormDays.map(d => dayLabel(d.date)).join(' & ');
+      label = `Stormvarning — ${stormNames}`;
+      body = `Medelvind upp till <strong>${fmtW(stormPeak.wind_mean ?? maxWind)}</strong>, byar upp till <strong>${fmtW(stormPeak.wind_max ?? maxGust)}</strong>. ` +
+             `Vind ökar nätbelastningen markant — förhöjd beredskap rekommenderas.`;
+
+    } else if (heavyRainDays.length > 0) {
+      // ── 6. HEAVY RAIN ──
+      cls = 'alert-bar--rain';
+      icon = '🌧️';
+      const rainPeak = heavyRainDays.reduce((a,b) => (b.precip_sum??0) > (a.precip_sum??0) ? b : a, heavyRainDays[0]);
+      const rainNames = heavyRainDays.map(d => dayLabel(d.date)).join(' & ');
+      label = `Kraftigt regn — ${rainNames}`;
+      body = `Upp till <strong>${(rainPeak.precip_sum??0).toFixed(0)} mm</strong> regn förväntas (${rainNames}). ` +
+             `Kontrollera dränering och kulvertbrunnar — risk för vattenintrång vid intensivt regn.`;
+
+    } else if (windDays.length > 0) {
+      // ── 7. STRONG WIND ──
+      cls = 'alert-bar--wind';
+      icon = '💨';
+      const windPeak = windDays.reduce((a,b) => (b.wind_mean??0) > (a.wind_mean??0) ? b : a, windDays[0]);
+      const windNames = windDays.map(d => dayLabel(d.date)).join(' & ');
+      label = `Frisk vind — ${windNames}`;
+      body = `Medelvind upp till <strong>${fmtW(windPeak.wind_mean ?? maxWind)}</strong>, byar upp till <strong>${fmtW(windPeak.wind_max ?? maxGust)}</strong>. ` +
+             `Vinden bidrar till ökad vindkyla och något förhöjd nätbelastning.`;
+
+    } else if (rainDays.length > 0) {
+      // ── 8. NOTABLE RAIN ──
+      cls = 'alert-bar--rain';
+      icon = '🌦️';
+      const rainTotal = totalPrecip3.toFixed(0);
+      const rainNames = rainDays.map(d => dayLabel(d.date)).join(' & ');
+      label = `Regnperiod — ${rainNames}`;
+      body = `Totalt ~<strong>${rainTotal} mm</strong> regn förväntas de kommande 3 dagarna. ` +
+             `Mildare väder under regnperioder kan ge möjlighet att justera ner framledningstemperaturen något.`;
+
+    } else if (warming) {
+      // ── 9. MILD: warming trend ──
+      cls = 'alert-bar--mild';
+      icon = '🌤️';
+      const warmDays = next3.map(d => fmtT(d.temp_max)).join(' / ');
+      label = 'Mildväder på väg';
+      body = `Temperaturen stiger de kommande dagarna (max ${warmDays}). Möjlighet att sänka framledningstemperaturen och spara energi.`;
+
+    } else if (allMild) {
+      // ── 10. NORMAL: stable mild ──
+      cls = 'alert-bar--normal';
+      icon = '✅';
+      label = 'Stabilt väderläge — ingen frostrisk';
+      body = `Inga frostdygn förväntas de kommande 7 dagarna. Medeltemperatur ~${fmtT(avg3)}. Normaldrift rekommenderas.`;
+
+    } else {
+      // ── 11. DEFAULT: general outlook ──
+      cls = 'alert-bar--normal';
+      icon = '🌡️';
+      const lo = fmtT(Math.min(...next7.map(d => d.temp_min ?? 0)));
+      const hi = fmtT(Math.max(...next7.map(d => d.temp_max ?? 0)));
+      label = 'Veckans väderläge';
+      body = `Temperaturspann kommande 7 dagar: ${lo} till ${hi}. Inga extremer prognostiserade.`;
+    }
+
+    banner.className = `alert-bar ${cls}`;
+    banner.style.display = '';
+    banner.innerHTML = `
+      <div class="alert-bar-inner">
+        <div class="alert-bar-icon">${icon}</div>
+        <div>
+          <div class="alert-bar-label">${label}</div>
+          <p>${body}</p>
+        </div>
+      </div>`;
+  }
+
+  function applyLiveData(data) {
+    const obs  = data.latest_observation || {};
+    const today = data.today || {};
+    const forecast = data.forecast_daily || [];
+    const histWeeks = data.history_weekly || [];
+    const histDaily = data.history_daily || [];
+
+    // ── Update "generated at" timestamp
+    if (data.generated_at) {
+      const d = new Date(data.generated_at);
+      const ts = d.toLocaleDateString('sv-SE') + ' ' + d.toLocaleTimeString('sv-SE', {hour:'2-digit', minute:'2-digit'});
+      document.querySelectorAll('.hero-meta').forEach(el => el.textContent = 'Genererad ' + ts);
+    }
+
+    // ── Update footer with station metadata from JSON
+    if (data.station_name) {
+      const stEl = document.getElementById('footer-station');
+      if (stEl) stEl.textContent =
+        `Datakälla: SMHI Open Data · Station ${data.station_name} (ID ${data.station_id}) · ` +
+        `lat ${data.station_lat?.toFixed(3)}, lon ${data.station_lon?.toFixed(3)} · ${data.station_type || ''}`;
+    }
+    if (data.wind_urban_factor != null) {
+      const wfEl = document.getElementById('footer-wind-factor');
+      if (wfEl) {
+        const pct = Math.round((1 - data.wind_urban_factor) * 100);
+        wfEl.textContent = pct > 0
+          ? `Vindkorrektion: ×${data.wind_urban_factor.toFixed(2)} (kuststation → stadsmiljö, −${pct}%)`
+          : `Vindkorrektion: ingen (faktor 1.0)`;
+      }
+      const wfd = document.getElementById('wind-factor-display');
+      if (wfd) wfd.textContent = data.wind_urban_factor.toFixed(2);
+    }
+
+    // ── Update nuläge section label with obs timestamp
+    if (obs.ts) {
+      const obsDate = new Date(obs.ts);
+      const weekdays = ['sön','mån','tis','ons','tor','fre','lör'];
+      const months = ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+      const wd = weekdays[obsDate.getUTCDay()];
+      const dd = obsDate.getUTCDate();
+      const mo = months[obsDate.getUTCMonth()];
+      const hh = String(obsDate.getUTCHours() + 1).padStart(2,'0'); // UTC+1
+      const mm = '00';
+      const lbl = document.getElementById('nulaege-label');
+      if (lbl) lbl.textContent = `Nuläge · ${wd} ${dd} ${mo} ${hh}:${mm}`;
+    }
+
+    // ── Dynamic alert banner based on 7-day forecast
+    updateAlertBanner(forecast, obs);
+
+    // ── Update nuläge cards
+    if (obs.temp_c != null) {
+      document.querySelectorAll('.card.c-orange .card-value').forEach(el =>
+        el.innerHTML = fmtTemp(obs.temp_c).replace('°','') + '<sup>°C</sup>');
+    }
+    if (obs.wind_ms != null) {
+      document.querySelectorAll('.card.c-teal .card-value').forEach(el =>
+        el.innerHTML = fmtNum(obs.wind_ms, 0) + '<sup>m/s</sup>');
+    }
+    if (obs.solar_wm2 != null) {
+      document.querySelectorAll('.card.c-solar .card-value').forEach(el =>
+        el.innerHTML = fmtNum(obs.solar_wm2, 0) + '<sup>W/m²</sup>');
+    }
+
+    // ── Update chart configs: combine history + forecast for 7-day view
+    // Strategy: use the last N days of history + enough forecast to fill 7 bars.
+    // This ensures charts are never empty even when the DB is new.
+    {
+      // Build a unified 7-day array: history days (oldest→newest) + forecast fill
+      const histLast = histDaily.slice(-7);  // up to 7 most recent history days
+      const fcFill   = forecast.slice(0, Math.max(0, 7 - histLast.length)); // forecast fill
+
+      // Map forecast fields to the same shape as daily history rows
+      const fcMapped = fcFill.map(d => ({
+        date:           d.date,
+        temp_mean:      d.temp_mean  ?? ((d.temp_max ?? 0) + (d.temp_min ?? 0)) / 2,
+        wind_mean:      d.wind_mean  ?? 0,
+        precip_sum:     d.precip_sum ?? 0,
+        humidity_mean:  d.humidity_mean ?? null,   // forecast may not have humidity
+        solar_mean:     d.solar_mean ?? 0,
+        solar_reduction: d.solar_reduction ?? 0,
+        heat_index:     d.heat_index ?? 0,
+        _forecast: true,
+      }));
+
+      const combined = [...histLast, ...fcMapped];  // oldest first
+      const nonzeroCheck = (arr, field) => arr.some(d => (d[field] ?? 0) !== 0);
+
+      if (combined.length > 0) {
+        // Day labels — mark forecast days with a dagger so user knows
+        const days = combined.map(d => isoToSwedishDay(d.date).slice(0,2) + (d._forecast ? '†' : ''));
+
+        chartConfigs.temp.days     = days;
+        chartConfigs.temp.values   = combined.map(d => parseFloat((d.temp_mean ?? 0).toFixed(1)));
+
+        chartConfigs.wind.days     = days;
+        chartConfigs.wind.values   = combined.map(d => parseFloat((d.wind_mean ?? 0).toFixed(1)));
+
+        chartConfigs.precip.days   = days;
+        chartConfigs.precip.values = combined.map(d => parseFloat((d.precip_sum ?? 0).toFixed(1)));
+
+        // Humidity: forecast often lacks this — only update if we have real values
+        if (nonzeroCheck(histLast, 'humidity_mean')) {
+          chartConfigs.humidity.days   = days;
+          chartConfigs.humidity.values = combined.map(d => parseFloat((d.humidity_mean ?? 0).toFixed(0)));
+        }
+
+        chartConfigs.solar.days    = days;
+        chartConfigs.solar.values  = combined.map(d => parseFloat((d.solar_mean ?? 0).toFixed(0)));
+
+        // heatidx chart shows solar_reduction (fix: was using wrong field)
+        chartConfigs.heatidx.days   = days;
+        chartConfigs.heatidx.values = combined.map(d => parseFloat((d.solar_reduction ?? 0).toFixed(1)));
+
+        // Add a footnote to chart subtitles if forecast data was used
+        if (fcMapped.length > 0) {
+          const note = ` · † = prognos`;
+          ['temp','wind','precip','humidity','solar','heatidx'].forEach(k => {
+            if (!chartConfigs[k].subtitle.includes('†'))
+              chartConfigs[k].subtitle += note;
+          });
+        }
+      }
+    }
+
+    // ── Update historical week cards
+    if (histWeeks.length > 0) {
+      histWeeks.slice(0, 4).forEach((wk, i) => {
+        const key = ['v10','v9','v8','v7'][i];
+        if (weekData[key]) {
+          weekData[key].idx = Math.round(wk.heat_index_mean || 0);
+          weekData[key].period = wk.date_from + ' – ' + wk.date_to;
+          weekData[key].idxBreakdown.solar = -Math.round(wk.solar_reduction_mean || 0);
+        }
+      });
+    }
+
+    // ── Rebuild forecast list with live data
+    if (forecast.length > 0) {
+      const list = document.querySelector('.forecast-list');
+      if (!list) return;
+      list.innerHTML = forecast.slice(0,7).map((day, i) => {
+        const isToday = i === 0;
+        const name = isoToSwedishDay(day.date);
+        const dateLabel = isoToShortDate(day.date);
+        const hiClass = (day.temp_max >= 0) ? 'fc-hi' : 'fc-lo';
+        const loClass = (day.temp_min < 0) ? 'fc-frost' : 'fc-lo';
+        const condLabel = smhiSymbolLabel(day.symbol_min);
+        const frost = day.temp_min < 0;
+        const badgeClass = frost ? 'b-frost' : (condLabel.includes('regn') || condLabel.includes('snö')) ? 'b-snow' : condLabel.includes('Klart') || condLabel.includes('Halvklart') ? 'b-sun' : 'b-cloud';
+        const solar = Math.round(day.solar_mean || 0);
+        const hdd = Math.max(0, 17 - (day.temp_mean || 0));
+        const solRed = Math.min(12, solar * 0.025);
+        const windAdd = Math.min(12, (day.wind_mean || 0) * 1.2);
+        const idx = Math.round(Math.min(100, Math.max(0, hdd * 4.8 + windAdd - solRed)));
+        const solRedRound = Math.round(solRed);
+        const dayKey = ['wed','thu','fri','sat','sun','mon','tue'][i];
+        return `<div class="fc-day ${isToday?'today':''}" onclick="openDayModal('${dayKey}')" style="cursor:pointer">
+          <div class="fc-top">
+            <span class="fc-dayname">${name}</span><span class="fc-date">${dateLabel}</span>
+            <div class="fc-temps">
+              <span class="${hiClass}">${fmtTemp(day.temp_max)}</span>
+              <span class="${loClass}">${fmtTemp(day.temp_min)}</span>
+            </div>
+            <span class="badge ${badgeClass}">${frost && i>3?'❄ ':''}${condLabel}</span>
+          </div>
+          <div class="fc-bottom">
+            <div class="fc-stat"><div class="fc-stat-label">Vind</div><div class="fc-stat-val">${fmtNum(day.wind_mean,0)}/${fmtNum(day.wind_max,0)} m/s</div></div>
+            <div class="fc-stat"><div class="fc-stat-label">☀️ Sol</div><div class="fc-stat-val" style="color:var(--solar)">${solar} W/m²</div></div>
+            <div class="fc-stat"><div class="fc-stat-label">Värmebehov <span style="color:var(--solar);font-size:9px">−${solRedRound} sol</span></div>
+              <div class="hbar"><div class="htrack"><div class="hfill" style="width:${idx}%"></div>${solRedRound>0?`<div style="height:100%;background:#F5D9A8;width:${solRedRound}%;display:inline-block;"></div>`:''}</div><span class="hpct">${idx}%</span></div></div>
+          </div>
+          <div style="padding:5px 14px 8px;font-size:11px;color:var(--teal);font-weight:600;">↗ Tryck för timvisning</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Update data badge in topbar
+    const badge = document.querySelector('.topbar-week');
+    if (badge && data.generated_at) {
+      const d = new Date(data.generated_at);
+      const week = today.week || d.getWeek?.() || '';
+      badge.textContent = `V.${today.week || '—'} · ${d.getFullYear()}`;
+    }
+
+    console.log('✓ Live weather data loaded from weather_data.json');
+  }
+
+  // Fetch weather_data.json on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    fetch('weather_data.json?t=' + Date.now())
+      .then(r => {
+        if (!r.ok) throw new Error('not found');
+        return r.json();
+      })
+      .then(data => applyLiveData(data))
+      .catch(() => {
+        console.log('weather_data.json not found — using static example data.');
+      });
+  });
+  // ── Auto-refresh every 60 minutes so live data stays current
+  setTimeout(() => location.reload(), 60 * 60 * 1000);
+</script>
+
+</body>
+</html>
