@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-26T15:40:58.911662+00:00",
+  "generated_at": "2026-05-26T18:29:22.399268+00:00",
   "daily": [
     {
       "date": "2025-10-27",
@@ -4387,7 +4387,7 @@
       "solar_reduction": 0.0,
       "heat_index": 6.7,
       "frost_day": 0,
-      "updated_at": "2026-05-26T15:40:58.902577+00:00",
+      "updated_at": "2026-05-26T18:29:22.389947+00:00",
       "source": "live"
     },
     {
@@ -4408,7 +4408,7 @@
       "solar_reduction": 0.0,
       "heat_index": 4.8,
       "frost_day": 0,
-      "updated_at": "2026-05-26T15:40:58.902731+00:00",
+      "updated_at": "2026-05-26T18:29:22.390098+00:00",
       "source": "live"
     },
     {
@@ -4429,7 +4429,7 @@
       "solar_reduction": 0.0,
       "heat_index": 7.7,
       "frost_day": 0,
-      "updated_at": "2026-05-26T15:40:58.902782+00:00",
+      "updated_at": "2026-05-26T18:29:22.390159+00:00",
       "source": "live"
     },
     {
@@ -4450,7 +4450,7 @@
       "solar_reduction": 0.0,
       "heat_index": 15.8,
       "frost_day": 0,
-      "updated_at": "2026-05-26T15:40:58.902825+00:00",
+      "updated_at": "2026-05-26T18:29:22.390212+00:00",
       "source": "live"
     }
   ]
