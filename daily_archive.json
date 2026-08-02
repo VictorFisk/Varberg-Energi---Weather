@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T03:14:59.645819+00:00",
+  "generated_at": "2026-08-02T06:34:55.450934+00:00",
   "daily": [
     {
       "date": "2025-10-27",
@@ -5815,7 +5815,7 @@
       "solar_reduction": 0.0,
       "heat_index": 0.0,
       "frost_day": 0,
-      "updated_at": "2026-08-02T03:14:59.633830+00:00",
+      "updated_at": "2026-08-02T06:34:55.438955+00:00",
       "source": "live"
     },
     {
@@ -5836,7 +5836,7 @@
       "solar_reduction": 0.0,
       "heat_index": 4.8,
       "frost_day": 0,
-      "updated_at": "2026-08-02T03:14:59.634005+00:00",
+      "updated_at": "2026-08-02T06:34:55.439147+00:00",
       "source": "live"
     },
     {
@@ -5857,7 +5857,7 @@
       "solar_reduction": 0.0,
       "heat_index": 7.7,
       "frost_day": 0,
-      "updated_at": "2026-08-02T03:14:59.634084+00:00",
+      "updated_at": "2026-08-02T06:34:55.439224+00:00",
       "source": "live"
     }
   ]
