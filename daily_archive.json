@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T16:50:53.473955+00:00",
+  "generated_at": "2026-09-21T20:51:33.500502+00:00",
   "daily": [
     {
       "date": "2025-10-27",
@@ -6865,7 +6865,7 @@
       "solar_reduction": 0.0,
       "heat_index": 26.9,
       "frost_day": 0,
-      "updated_at": "2026-09-21T16:50:53.460607+00:00",
+      "updated_at": "2026-09-21T20:51:33.489236+00:00",
       "source": "live"
     },
     {
@@ -6886,7 +6886,7 @@
       "solar_reduction": 0.0,
       "heat_index": 18.2,
       "frost_day": 0,
-      "updated_at": "2026-09-21T16:50:53.460779+00:00",
+      "updated_at": "2026-09-21T20:51:33.489400+00:00",
       "source": "live"
     },
     {
@@ -6907,15 +6907,15 @@
       "solar_reduction": 0.0,
       "heat_index": 24.5,
       "frost_day": 0,
-      "updated_at": "2026-09-21T16:50:53.460888+00:00",
+      "updated_at": "2026-09-21T20:51:33.489454+00:00",
       "source": "live"
     },
     {
       "date": "2026-09-21",
       "week": 39,
       "year": 2026,
-      "temp_mean": 10.8,
-      "temp_min": 10.8,
+      "temp_mean": 10.4,
+      "temp_min": 9.9,
       "temp_max": 10.8,
       "wind_mean": 0.0,
       "wind_max": 0.0,
@@ -6923,12 +6923,12 @@
       "humidity_mean": 0.0,
       "solar_mean": 0.0,
       "solar_max": 0.0,
-      "hdd": 6.2,
+      "hdd": 6.6,
       "wind_addition": 0.0,
       "solar_reduction": 0.0,
-      "heat_index": 29.8,
+      "heat_index": 31.7,
       "frost_day": 0,
-      "updated_at": "2026-09-21T16:50:53.460954+00:00",
+      "updated_at": "2026-09-21T20:51:33.489500+00:00",
       "source": "live"
     }
   ]
